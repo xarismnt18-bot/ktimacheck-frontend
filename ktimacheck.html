@@ -2268,11 +2268,48 @@ function buildAuthHeaders(extra = {}) {
   return headers;
 }
 
+function getAuthToken() {
+  return localStorage.getItem("sb_access_token") || "";
+}
+
+function buildAuthHeaders(extra = {}) {
+  const token = getAuthToken();
+  const headers = { ...extra };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 async function api(method, path, body = null) {
   const opts = {
     method,
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
   };
+
+  if (body) opts.body = JSON.stringify(body);
+
+  try {
+    const res = await fetch(API_BASE + path, opts);
+
+    if (res.status === 401) {
+      showToast("error", "Please login first");
+      throw new Error("Unauthorized");
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (e) {
+    showToast("error", e.message || "Network error");
+    throw e;
+  }
+}
 
   if (body) opts.body = JSON.stringify(body);
 
@@ -2362,19 +2399,22 @@ function showPage(id, navEl) {
 // ── Dashboard ─────────────────────────────────────────
 async function loadDashboard() {
   try {
-    // Load stats
     const stats = await api('GET', '/dashboard/stats');
     document.querySelectorAll('.stat-value')[0].textContent = stats.active_cases || 0;
     document.querySelectorAll('.stat-value')[1].textContent = stats.flagged_cases || 0;
     document.querySelectorAll('.stat-value')[2].textContent = stats.total_documents || 0;
     document.querySelectorAll('.stat-value')[3].textContent = stats.total_reports || 0;
 
-    // Load recent cases
     const cases = await api('GET', '/cases');
     allCases = cases;
     renderCasesTable(cases, 'dashboard');
-  } catch(e) {
-    // Keep demo data if backend not responding
+  } catch (e) {
+    document.querySelectorAll('.stat-value')[0].textContent = '0';
+    document.querySelectorAll('.stat-value')[1].textContent = '0';
+    document.querySelectorAll('.stat-value')[2].textContent = '0';
+    document.querySelectorAll('.stat-value')[3].textContent = '0';
+
+    showToast('error', 'Please log in to load live data');
   }
 }
 
