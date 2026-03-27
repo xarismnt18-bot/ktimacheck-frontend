@@ -2031,13 +2031,9 @@ body::before {
             <div class="table-header-cell">Active Cases</div>
             <div class="table-header-cell">Action</div>
           </div>
-          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Αλέξανδρος Παπαδάκης</div><div class="case-client">🇬🇷 Greek</div><div><span class="badge active">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
-          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Maria Schneider</div><div class="case-client">🇩🇪 German</div><div><span class="badge complete">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
-          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Jin Wei</div><div class="case-client">🇨🇳 Chinese</div><div><span class="badge flagged">Golden Visa</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
-          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Ahmed Al-Rashid</div><div class="case-client">🇦🇪 Emirati</div><div><span class="badge pending">Golden Visa</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
-          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Σοφία Μαρκοπούλου</div><div class="case-client">🇬🇷 Greek</div><div><span class="badge complete">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
-        </div>
-      </div>
+
+<div id="casesTableBody"></div>
+
     </div>
 
     <!-- ════════════════ SETTINGS PAGE ════════════════ -->
@@ -2511,16 +2507,16 @@ function selectType(el) {
 }
 
 async function createCase() {
-  const btn = document.querySelector('#newCaseModal .btn-primary') 
-          || document.querySelector('.btn-primary');
+  const btn = document.querySelector('#newCaseModal .btn.primary');
   const inputs = document.querySelectorAll('#newCaseModal .form-input');
+  const selects = document.querySelectorAll('#newCaseModal .form-select');
+  const selectedTypeEl = document.querySelector('.type-option.selected .type-option-name');
 
   try {
-    btn.disabled = true;
-    btn.textContent = 'Creating...';
-
-    const selectedTypeEl = document.querySelector('.type-option.selected .type-option-name');
-    const buyerTypeEl = document.querySelector('#newCaseModal select');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+    }
 
     const propertyTypeMap = {
       "Apartment": "apartment",
@@ -2539,7 +2535,7 @@ async function createCase() {
     };
 
     const propertyTypeLabel = selectedTypeEl?.textContent?.trim() || "Apartment";
-    const buyerTypeLabel = buyerTypeEl?.value?.trim() || "Greek Citizen";
+    const buyerTypeLabel = selects[0]?.value?.trim() || "Greek Citizen";
 
     const payload = {
       property_type: propertyTypeMap[propertyTypeLabel] || "apartment",
@@ -2570,16 +2566,19 @@ async function createCase() {
     closeNewCase();
     showToast('success', 'Case created successfully');
 
-    await loadCases();
+    await loadDashboard();
+    await loadCasesList();
 
+    inputs.forEach(i => i.value = '');
   } catch (e) {
     console.error(e);
     showToast('error', e.message || 'Failed to create case');
   } finally {
-   if (btn) {
-  btn.textContent = 'Create Case & Generate Checklist →';
-  btn.disabled = false;
-}
+    if (btn) {
+      btn.textContent = 'Create Case & Generate Checklist →';
+      btn.disabled = false;
+    }
+  }
 }
 
 // ── Document Upload (AI Analysis) ────────────────────
