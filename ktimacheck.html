@@ -1102,6 +1102,8 @@ body::before {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
 
@@ -1110,6 +1112,13 @@ body::before {
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
+</div>
+
+<div style="padding:16px 32px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+  <input id="loginEmail" class="form-input" style="max-width:220px;" placeholder="Email" />
+  <input id="loginPassword" class="form-input" style="max-width:220px;" type="password" placeholder="Password" />
+  <button class="btn primary" onclick="handleLogin()">Login</button>
+  <button class="btn ghost" onclick="logoutUser()">Logout</button>
 </div>
 
 <!-- App Shell -->
@@ -2196,6 +2205,13 @@ body::before {
   </div>
 </div>
 
+<div style="padding:16px 32px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+  <input id="loginEmail" class="form-input" style="max-width:220px;" placeholder="Email" />
+  <input id="loginPassword" class="form-input" style="max-width:220px;" type="password" placeholder="Password" />
+  <button class="btn primary" onclick="handleLogin()">Login</button>
+  <button class="btn ghost" onclick="logoutUser()">Logout</button>
+</div>
+
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -2205,29 +2221,125 @@ body::before {
 // ══════════════════════════════════════════════════════
 const API_BASE = "https://ktimacheck-api.onrender.com";
 
+const SUPABASE_URL="https://oxvhfdfzodhtjrjgtjpz.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94dmhmZGZ6b2RodGpyamd0anB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjI2NzEsImV4cCI6MjA5MDEzODY3MX0.m_Rbhc0BiNtE5cQWBfzieP7vttr33VlKHOJwwTRVTh0";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
 // ── State ─────────────────────────────────────────────
 let allCases = [];
 let currentCaseId = null;
 let currentCase = null;
 
-// ── API Helper ────────────────────────────────────────
+function getAuthToken() {
+  return (
+    localStorage.getItem("sb_access_token") ||
+    sessionStorage.getItem("sb_access_token") ||
+    ""
+  );
+}
+
+function buildAuthHeaders(extra = {}) {
+  const token = getAuthToken();
+  const headers = { ...extra };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
+function getAuthToken() {
+  return localStorage.getItem("sb_access_token") || "";
+}
+
+function buildAuthHeaders(extra = {}) {
+  const token = getAuthToken();
+  const headers = { ...extra };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 async function api(method, path, body = null) {
   const opts = {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
   };
+
   if (body) opts.body = JSON.stringify(body);
+
   try {
     const res = await fetch(API_BASE + path, opts);
+
+    if (res.status === 401) {
+      showToast("error", "Please sign in first");
+      throw new Error("Unauthorized");
+    }
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || `HTTP ${res.status}`);
     }
+
     return await res.json();
   } catch (e) {
-    showToast('error', e.message || 'Network error');
+    showToast("error", e.message || "Network error");
     throw e;
   }
+}
+
+async function loginWithEmail(email, password) {
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    showToast("error", error.message);
+    throw error;
+  }
+
+  localStorage.setItem("sb_access_token", data.session.access_token);
+  showToast("success", "Logged in successfully");
+
+  await loadDashboard();
+  await loadCasesList();
+}
+
+async function logoutUser() {
+  await supabaseClient.auth.signOut();
+  localStorage.removeItem("sb_access_token");
+  showToast("success", "Logged out");
+}
+
+async function restoreSession() {
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) return;
+
+  const token = data?.session?.access_token;
+  if (token) {
+    localStorage.setItem("sb_access_token", token);
+  }
+}
+
+async function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  if (!email || !password) {
+    showToast("error", "Enter email and password");
+    return;
+  }
+
+  await loginWithEmail(email, password);
 }
 
 // ── Navigation ────────────────────────────────────────
@@ -2507,10 +2619,11 @@ async function processFile(file) {
   formData.append('file', file);
 
   try {
-    const res = await fetch(`${API_BASE}/cases/${currentCaseId}/documents/upload`, {
-      method: 'POST',
-      body: formData,
-    });
+   const res = await fetch(`${API_BASE}/cases/${currentCaseId}/documents/upload`, {
+         method: 'POST',
+         headers: buildAuthHeaders(),
+         body: formData,
+});
     if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
     const data = await res.json();
 
@@ -2566,10 +2679,10 @@ async function downloadReport() {
   showToast('info', 'Generating bilingual PDF report…');
   try {
     const res = await fetch(`${API_BASE}/cases/${currentCaseId}/report`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ language: 'both' }),
-    });
+  method: 'POST',
+  headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
+  body: JSON.stringify({ language: 'both' }),
+});
     if (!res.ok) throw new Error('Report generation failed');
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -2613,7 +2726,10 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Init ──────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+
+  await restoreSession();  // ✅ ADD THIS LINE
+
   // Animate progress bars
   document.querySelectorAll('.progress-bar-fill').forEach((bar, i) => {
     const w = bar.style.width;
