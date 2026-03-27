@@ -1102,8 +1102,6 @@ body::before {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 </head>
 <body>
 
@@ -1112,13 +1110,6 @@ body::before {
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
-</div>
-
-<div style="padding:16px 32px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-  <input id="loginEmail" class="form-input" style="max-width:220px;" placeholder="Email" />
-  <input id="loginPassword" class="form-input" style="max-width:220px;" type="password" placeholder="Password" />
-  <button class="btn primary" onclick="handleLogin()">Login</button>
-  <button class="btn ghost" onclick="logoutUser()">Logout</button>
 </div>
 
 <!-- App Shell -->
@@ -1257,7 +1248,8 @@ body::before {
             <div class="table-header-cell">Action</div>
           </div>
 
-          <div class="table-row" onclick="showCase('KTIMA-2401')" style="animation-delay:0.05s">
+          <div id="dashboardTableBody"><div style="padding:40px;text-align:center;color:var(--ink3);font-family:var(--font-mono);font-size:11px">Loading cases from database…</div></div>
+          <div class="table-row" onclick="showCase('KTIMA-2401')" style="animation-delay:0.05s;display:none">
             <div>
               <div class="case-name">KTIMA-2401</div>
               <div class="case-addr">Κηφισιά, Αττική · KAEK 050230501001</div>
@@ -1908,10 +1900,14 @@ body::before {
             <div class="table-header-cell">Progress</div>
             <div class="table-header-cell">Action</div>
           </div>
-
-            <div id="casesTableBody"></div>
-
-          </div>
+          <div class="table-row" onclick="showCase('KTIMA-2401')"><div><div class="case-name">KTIMA-2401</div><div class="case-addr">Κηφισιά, Αττική</div></div><div class="case-client">Αλέξανδρος Παπαδάκης</div><div><span class="badge draft">Apartment</span></div><div><span class="badge flagged">Flagged</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:62%"></div></div><div class="progress-pct">62%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row" onclick="showCase('KTIMA-2402')"><div><div class="case-name">KTIMA-2402</div><div class="case-addr">Γλυφάδα, Αττική</div></div><div class="case-client">Maria Schneider</div><div><span class="badge draft">Villa</span></div><div><span class="badge active">Active</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:85%"></div></div><div class="progress-pct">85%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row" onclick="showCase('KTIMA-2403')"><div><div class="case-name">KTIMA-2403</div><div class="case-addr">Θεσσαλονίκη</div></div><div class="case-client">Jin Wei</div><div><span class="badge draft">Commercial</span></div><div><span class="badge flagged">Flagged</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill low" style="width:38%"></div></div><div class="progress-pct">38%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row"><div><div class="case-name">KTIMA-2404</div><div class="case-addr">Μύκονος, Ν. Αιγαίο</div></div><div class="case-client">Ahmed Al-Rashid</div><div><span class="badge draft">Land</span></div><div><span class="badge pending">Pending</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:55%"></div></div><div class="progress-pct">55%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row" onclick="showPage('report')"><div><div class="case-name">KTIMA-2405</div><div class="case-addr">Κολωνάκι, Αθήνα</div></div><div class="case-client">Σοφία Μαρκοπούλου</div><div><span class="badge draft">Apartment</span></div><div><span class="badge complete">Complete</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:100%"></div></div><div class="progress-pct">100%</div></div><div><button class="action-btn">Report →</button></div></div>
+        </div>
+      </div>
+    </div>
 
     <!-- ════════════════ CHECKLIST PAGE ════════════════ -->
     <div class="page" id="page-checklist">
@@ -2031,9 +2027,13 @@ body::before {
             <div class="table-header-cell">Active Cases</div>
             <div class="table-header-cell">Action</div>
           </div>
-
-<div id="casesTableBody"></div>
-
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Αλέξανδρος Παπαδάκης</div><div class="case-client">🇬🇷 Greek</div><div><span class="badge active">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Maria Schneider</div><div class="case-client">🇩🇪 German</div><div><span class="badge complete">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Jin Wei</div><div class="case-client">🇨🇳 Chinese</div><div><span class="badge flagged">Golden Visa</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Ahmed Al-Rashid</div><div class="case-client">🇦🇪 Emirati</div><div><span class="badge pending">Golden Visa</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Σοφία Μαρκοπούλου</div><div class="case-client">🇬🇷 Greek</div><div><span class="badge complete">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- ════════════════ SETTINGS PAGE ════════════════ -->
@@ -2197,13 +2197,6 @@ body::before {
   </div>
 </div>
 
-<div style="padding:16px 32px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-  <input id="loginEmail" class="form-input" style="max-width:220px;" placeholder="Email" />
-  <input id="loginPassword" class="form-input" style="max-width:220px;" type="password" placeholder="Password" />
-  <button class="btn primary" onclick="handleLogin()">Login</button>
-  <button class="btn ghost" onclick="logoutUser()">Logout</button>
-</div>
-
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -2213,104 +2206,29 @@ body::before {
 // ══════════════════════════════════════════════════════
 const API_BASE = "https://ktimacheck-api.onrender.com";
 
-const SUPABASE_URL="https://oxvhfdfzodhtjrjgtjpz.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_x-ujeWja7hSM9UxS2Z-oug_acrMZ3dk";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
 // ── State ─────────────────────────────────────────────
 let allCases = [];
 let currentCaseId = null;
 let currentCase = null;
 
-function getAuthToken() {
-  return localStorage.getItem("sb_access_token") || "";
-}
-
-function buildAuthHeaders(extra = {}) {
-  const token = getAuthToken();
-  const headers = { ...extra };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  return headers;
-}
-
-async function api(method, path, body) {
-  const session = await supabaseClient.auth.getSession();
-  const token = session?.data?.session?.access_token;
-
-  const res = await fetch(`${API_BASE}${path}`, {
+// ── API Helper ────────────────────────────────────────
+async function api(method, path, body = null) {
+  const opts = {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` })
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || 'Request failed');
-  }
-
-  return res.json();
-}
+    headers: { 'Content-Type': 'application/json' },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(API_BASE + path, opts);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    return await res.json();
   } catch (e) {
-    showToast("error", e.message || "Network error");
+    showToast('error', e.message || 'Network error');
     throw e;
   }
-}
-
-async function loginWithEmail(email, password) {
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    showToast("error", error.message);
-    throw error;
-  }
-
-  localStorage.setItem("sb_access_token", data.session.access_token);
-  showToast("success", "Logged in successfully");
-
-  await loadDashboard();
-  await loadCasesList();
-}
-
-async function logoutUser() {
-  await supabaseClient.auth.signOut();
-  localStorage.removeItem("sb_access_token");
-  showToast("success", "Logged out");
-}
-
-async function restoreSession() {
-  const { data, error } = await supabaseClient.auth.getSession();
-  if (error) return;
-
-  const token = data?.session?.access_token;
-  if (token) {
-    localStorage.setItem("sb_access_token", token);
-  }
-}
-
-async function handleLogin() {
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
-
-  if (!email || !password) {
-    showToast("error", "Enter email and password");
-    return;
-  }
-
-  await loginWithEmail(email, password);
 }
 
 // ── Navigation ────────────────────────────────────────
@@ -2333,22 +2251,19 @@ function showPage(id, navEl) {
 // ── Dashboard ─────────────────────────────────────────
 async function loadDashboard() {
   try {
+    // Load stats
     const stats = await api('GET', '/dashboard/stats');
     document.querySelectorAll('.stat-value')[0].textContent = stats.active_cases || 0;
     document.querySelectorAll('.stat-value')[1].textContent = stats.flagged_cases || 0;
     document.querySelectorAll('.stat-value')[2].textContent = stats.total_documents || 0;
     document.querySelectorAll('.stat-value')[3].textContent = stats.total_reports || 0;
 
+    // Load recent cases
     const cases = await api('GET', '/cases');
     allCases = cases;
     renderCasesTable(cases, 'dashboard');
-  } catch (e) {
-    document.querySelectorAll('.stat-value')[0].textContent = '0';
-    document.querySelectorAll('.stat-value')[1].textContent = '0';
-    document.querySelectorAll('.stat-value')[2].textContent = '0';
-    document.querySelectorAll('.stat-value')[3].textContent = '0';
-
-    showToast('error', 'Please log in to load live data');
+  } catch(e) {
+    // Keep demo data if backend not responding
   }
 }
 
@@ -2362,12 +2277,29 @@ async function loadCasesList() {
 }
 
 function renderCasesTable(cases, target) {
-  const tableId = target === 'dashboard' ? '.page#page-dashboard .table-wrap' : '.page#page-cases .table-wrap';
-  const wrap = document.querySelector(tableId);
-  if (!wrap || cases.length === 0) return;
-
-  // Keep header row, replace body
-  const header = wrap.querySelector('.table-header');
+  if (target === 'dashboard') {
+    const body = document.getElementById('dashboardTableBody');
+    if (!body) return;
+    if (cases.length === 0) {
+      body.innerHTML = '<div style="padding:40px;text-align:center;color:var(--ink3);font-family:var(--font-mono);font-size:11px">No cases yet — click New Case to create your first one</div>';
+      return;
+    }
+    body.innerHTML = '';
+    cases.slice(0, 5).forEach((c, i) => {
+      const pct = c.progress || 0;
+      const fillClass = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+      const statusClass = { active:'active', flagged:'flagged', complete:'complete', pending:'pending', archived:'draft' }[c.status] || 'draft';
+      const row = document.createElement('div');
+      row.className = 'table-row';
+      row.style.animationDelay = (i * 0.05) + 's';
+      row.onclick = () => openCase(c.id);
+      row.innerHTML = '<div><div class="case-name">' + c.case_ref + '</div><div class="case-addr">' + c.city + ' · KAEK ' + (c.kaek || '—') + '</div></div><div class="case-client">' + c.buyer_name + '</div><div><span class="badge draft">' + c.property_type + '</span></div><div><span class="badge ' + statusClass + '">' + c.status + '</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill ' + fillClass + '" style="width:' + pct + '%"></div></div><div class="progress-pct">' + pct + '%</div></div><div><button class="action-btn">Open →</button></div>';
+      body.appendChild(row);
+    });
+    return;
+  }
+  const wrap = document.querySelector('.page#page-cases .table-wrap');
+  if (!wrap) return;
   const rows = wrap.querySelectorAll('.table-row');
   rows.forEach(r => r.remove());
 
@@ -2507,77 +2439,65 @@ function selectType(el) {
 }
 
 async function createCase() {
-  const btn = document.querySelector('#newCaseModal .btn.primary');
+  // Gather form values
   const inputs = document.querySelectorAll('#newCaseModal .form-input');
   const selects = document.querySelectorAll('#newCaseModal .form-select');
-  const selectedTypeEl = document.querySelector('.type-option.selected .type-option-name');
+  const selectedType = document.querySelector('.type-option.selected .type-option-name');
+
+  const address = inputs[0]?.value?.trim();
+  const kaek = inputs[1]?.value?.trim();
+  const area = inputs[2]?.value?.trim();
+  const price = inputs[3]?.value?.trim();
+  const buyerName = inputs[4]?.value?.trim();
+  const sellerName = inputs[5]?.value?.trim();
+  const closingDate = inputs[6]?.value?.trim();
+  const buyerType = selects[0]?.value || 'greek';
+  const propertyType = selectedType?.textContent?.toLowerCase().replace(' / ', '_').replace(' ', '_') || 'apartment';
+
+  if (!address || !buyerName) {
+    showToast('error', 'Address and buyer name are required');
+    return;
+  }
+
+  const btn = document.querySelector('#newCaseModal .btn.primary');
+  btn.textContent = 'Creating…';
+  btn.disabled = true;
 
   try {
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
-    }
-
-    const propertyTypeMap = {
-      "Apartment": "apartment",
-      "Villa / House": "villa",
-      "Land / Plot": "land",
-      "Commercial": "commercial",
-      "Island Property": "island",
-      "Conversion": "conversion"
-    };
-
-    const buyerTypeMap = {
-      "Greek Citizen": "greek",
-      "EU Citizen": "eu",
-      "Non-EU (Golden Visa)": "non_eu_golden_visa",
-      "Legal Entity": "legal_entity"
-    };
-
-    const propertyTypeLabel = selectedTypeEl?.textContent?.trim() || "Apartment";
-    const buyerTypeLabel = selects[0]?.value?.trim() || "Greek Citizen";
-
     const payload = {
-      property_type: propertyTypeMap[propertyTypeLabel] || "apartment",
-      buyer_type: buyerTypeMap[buyerTypeLabel] || "greek",
-      address: inputs[0]?.value?.trim() || "",
-      city: inputs[1]?.value?.trim() || "",
-      region: inputs[2]?.value?.trim() || null,
-      kaek: inputs[3]?.value?.trim() || null,
-      area_sqm: inputs[4]?.value ? Number(inputs[4].value) : null,
-      agreed_price: inputs[5]?.value ? Number(inputs[5].value) : null,
-      buyer_name: inputs[6]?.value?.trim() || "",
-      seller_name: inputs[7]?.value?.trim() || null,
-      target_closing_date: inputs[8]?.value || null,
-      notes: inputs[9]?.value?.trim() || null,
-      is_island_or_border: propertyTypeMap[propertyTypeLabel] === "island",
-      is_golden_visa: buyerTypeMap[buyerTypeLabel] === "non_eu_golden_visa",
+      property_type: propertyType,
+      buyer_type: buyerType.toLowerCase().replace(/ /g,'_').replace('-','_'),
+      address: address,
+      city: address.split(',').slice(-1)[0]?.trim() || 'Athens',
+      kaek: kaek || null,
+      area_sqm: area ? parseFloat(area) : null,
+      agreed_price: price ? parseFloat(price) : null,
+      buyer_name: buyerName,
+      seller_name: sellerName || null,
+      target_closing_date: closingDate || null,
+      is_golden_visa: buyerType.includes('Golden') || buyerType.includes('non_eu'),
+      is_island_or_border: propertyType.includes('island'),
       is_company_seller: false,
-      is_inherited: false
+      is_inherited: false,
     };
-
-    if (!payload.address || !payload.city || !payload.buyer_name) {
-      showToast('error', 'Fill address, city, and buyer name');
-      return;
-    }
 
     const newCase = await api('POST', '/cases', payload);
-
     closeNewCase();
-    showToast('success', 'Case created successfully');
+    showToast('success', `${newCase.case_ref} created · ${newCase.checklist?.length || 0} checklist items generated`);
+    setTimeout(() => showToast('info', 'Checklist auto-adjusted for property type'), 1000);
 
+    // Reload dashboard
+    allCases.unshift(newCase);
     await loadDashboard();
-    await loadCasesList();
 
+    // Clear form
     inputs.forEach(i => i.value = '');
-  } catch (e) {
-    console.error(e);
-    showToast('error', e.message || 'Failed to create case');
+
+  } catch(e) {
+    showToast('error', 'Failed to create case: ' + e.message);
   } finally {
-    if (btn) {
-      btn.textContent = 'Create Case & Generate Checklist →';
-      btn.disabled = false;
-    }
+    btn.textContent = 'Create Case & Generate Checklist →';
+    btn.disabled = false;
   }
 }
 
@@ -2605,11 +2525,10 @@ async function processFile(file) {
   formData.append('file', file);
 
   try {
-   const res = await fetch(`${API_BASE}/cases/${currentCaseId}/documents/upload`, {
-         method: 'POST',
-         headers: buildAuthHeaders(),
-         body: formData,
-});
+    const res = await fetch(`${API_BASE}/cases/${currentCaseId}/documents/upload`, {
+      method: 'POST',
+      body: formData,
+    });
     if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
     const data = await res.json();
 
@@ -2665,10 +2584,10 @@ async function downloadReport() {
   showToast('info', 'Generating bilingual PDF report…');
   try {
     const res = await fetch(`${API_BASE}/cases/${currentCaseId}/report`, {
-  method: 'POST',
-  headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
-  body: JSON.stringify({ language: 'both' }),
-});
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: 'both' }),
+    });
     if (!res.ok) throw new Error('Report generation failed');
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -2712,10 +2631,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Init ──────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
-
-  await restoreSession();  // ✅ ADD THIS LINE
-
+document.addEventListener('DOMContentLoaded', () => {
   // Animate progress bars
   document.querySelectorAll('.progress-bar-fill').forEach((bar, i) => {
     const w = bar.style.width;

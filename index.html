@@ -1,10 +1,2654 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=ktimacheck.html" />
-  <title>KtimaCheck</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KtimaCheck — Greek Real Estate Due Diligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #09090f;
+  --bg2:      #0f0f1a;
+  --bg3:      #141420;
+  --surface:  #16162a;
+  --surface2: #1c1c30;
+  --border:   rgba(120,100,255,0.12);
+  --border2:  rgba(120,100,255,0.22);
+  --ink:      #e8e6f0;
+  --ink2:     #9d9ab8;
+  --ink3:     #5c5980;
+  --gold:     #c9a84c;
+  --gold2:    #e8c96a;
+  --violet:   #7b5ea7;
+  --indigo:   #5b6ee1;
+  --green:    #3db882;
+  --red:      #e05c6a;
+  --orange:   #e08030;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+  --glow-gold: rgba(201,168,76,0.15);
+  --glow-indigo: rgba(91,110,225,0.18);
+  --radius: 6px;
+  --radius-lg: 12px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════
+   BACKGROUND EFFECTS
+══════════════════════════════════════ */
+.bg-orbs {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.orb-1 { width:600px;height:600px;background:radial-gradient(circle,rgba(91,110,225,0.3),transparent 70%);top:-200px;left:-100px;animation-delay:0s; }
+.orb-2 { width:400px;height:400px;background:radial-gradient(circle,rgba(123,94,167,0.25),transparent 70%);top:40%;right:-100px;animation-delay:-7s; }
+.orb-3 { width:300px;height:300px;background:radial-gradient(circle,rgba(201,168,76,0.15),transparent 70%);bottom:10%;left:30%;animation-delay:-13s; }
+@keyframes orbFloat {
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(30px,-20px) scale(1.05)}
+  66%{transform:translate(-20px,30px) scale(0.97)}
+}
+
+/* Subtle grid overlay */
+body::before {
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(120,100,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,100,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ══════════════════════════════════════
+   LAYOUT SHELL
+══════════════════════════════════════ */
+.app-shell {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px 1fr;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════
+   TOP BAR
+══════════════════════════════════════ */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(9,9,15,0.8);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.logo-wrap {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 0 16px rgba(91,110,225,0.4);
+}
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.logo-text span { color: var(--gold); }
+.logo-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  background: rgba(91,110,225,0.15);
+  border: 1px solid var(--border2);
+  color: var(--indigo);
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-left: 4px;
+  align-self: flex-end;
+  margin-bottom: 3px;
+}
+
+.topbar-center {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink3);
+}
+.topbar-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.topbar-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.topbar-btn:hover { border-color: var(--border2); color: var(--ink); }
+.topbar-btn.primary {
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  border: none;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 2px 12px rgba(91,110,225,0.3);
+}
+.topbar-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(91,110,225,0.4); }
+
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--violet), var(--indigo));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+}
+
+/* ══════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════ */
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: rgba(15,15,26,0.6);
+  backdrop-filter: blur(8px);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  padding: 0 12px 8px;
+  margin-top: 8px;
+}
+.sidebar-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--ink2);
+  font-size: 13px;
+  font-weight: 400;
+  position: relative;
+}
+.nav-item:hover { background: rgba(120,100,255,0.06); color: var(--ink); }
+.nav-item.active {
+  background: rgba(91,110,225,0.12);
+  color: var(--ink);
+  font-weight: 500;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 16px;
+  background: linear-gradient(180deg, var(--indigo), var(--violet));
+  border-radius: 0 2px 2px 0;
+}
+.nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(91,110,225,0.2);
+  color: var(--indigo);
+  border: 1px solid rgba(91,110,225,0.3);
+}
+.nav-badge.red { background: rgba(224,92,106,0.15); color: var(--red); border-color: rgba(224,92,106,0.3); }
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 16px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+.user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.user-card:hover { background: var(--surface); }
+.user-info { flex: 1; min-width: 0; }
+.user-name { font-size: 12px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); }
+
+/* ══════════════════════════════════════
+   MAIN CONTENT
+══════════════════════════════════════ */
+.main {
+  overflow-y: auto;
+  background: transparent;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ══════════════════════════════════════
+   DASHBOARD PAGE
+══════════════════════════════════════ */
+.page-header {
+  padding: 28px 32px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.page-title span { color: var(--gold); font-style: italic; }
+.page-subtitle {
+  font-size: 13px;
+  color: var(--ink2);
+  margin-top: 4px;
+}
+
+/* Stats row */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 24px 32px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--indigo), var(--violet));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-change {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin-top: 6px;
+  display: flex; align-items: center; gap: 4px;
+}
+.stat-change.up { color: var(--green); }
+.stat-change.warn { color: var(--orange); }
+.stat-icon {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 22px;
+  opacity: 0.3;
+}
+
+/* Cases table */
+.section-wrap { padding: 0 32px 32px; }
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+}
+.section-actions { display: flex; gap: 8px; }
+
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.8fr 0.8fr 0.8fr 1fr;
+  padding: 10px 18px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.table-header-cell {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.8fr 0.8fr 0.8fr 1fr;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  animation: rowIn 0.3s ease both;
+}
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: rgba(120,100,255,0.05); }
+@keyframes rowIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.case-name { font-weight: 500; color: var(--ink); font-size: 13px; }
+.case-addr { font-size: 11px; color: var(--ink3); margin-top: 2px; font-family: var(--font-mono); }
+.case-client { font-size: 12px; color: var(--ink2); }
+.case-date { font-family: var(--font-mono); font-size: 11px; color: var(--ink3); }
+
+.progress-cell { display: flex; flex-direction: column; gap: 4px; }
+.progress-bar-bg { height: 3px; background: rgba(120,100,255,0.12); border-radius: 2px; }
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+.progress-bar-fill.low { background: var(--red); }
+.progress-bar-fill.mid { background: var(--orange); }
+.progress-bar-fill.high { background: var(--green); }
+.progress-pct { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); }
+
+/* Status badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge::before { content:''; width:5px;height:5px;border-radius:50%; flex-shrink:0; }
+.badge.active { background:rgba(61,184,130,0.1);color:var(--green);border:1px solid rgba(61,184,130,0.25); }
+.badge.active::before { background:var(--green); }
+.badge.pending { background:rgba(224,128,48,0.1);color:var(--orange);border:1px solid rgba(224,128,48,0.25); }
+.badge.pending::before { background:var(--orange); }
+.badge.flagged { background:rgba(224,92,106,0.1);color:var(--red);border:1px solid rgba(224,92,106,0.25); }
+.badge.flagged::before { background:var(--red); }
+.badge.complete { background:rgba(91,110,225,0.1);color:var(--indigo);border:1px solid rgba(91,110,225,0.3); }
+.badge.complete::before { background:var(--indigo); }
+.badge.draft { background:rgba(93,90,128,0.15);color:var(--ink3);border:1px solid var(--border); }
+.badge.draft::before { background:var(--ink3); }
+
+/* Action btn in table */
+.action-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--indigo);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.action-btn:hover { background: rgba(91,110,225,0.1); border-color: var(--indigo); }
+
+/* ══════════════════════════════════════
+   CASE DETAIL PAGE
+══════════════════════════════════════ */
+.case-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  padding: 24px 32px;
+}
+
+/* Checklist */
+.checklist-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.checklist-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2);
+}
+.checklist-title { font-family: var(--font-display); font-size: 18px; font-weight: 500; }
+
+.pillar {
+  border-bottom: 1px solid var(--border);
+}
+.pillar:last-child { border-bottom: none; }
+.pillar-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(9,9,15,0.3);
+  transition: background 0.15s;
+}
+.pillar-header:hover { background: rgba(120,100,255,0.04); }
+.pillar-icon { font-size: 16px; }
+.pillar-name { font-family: var(--font-display); font-size: 15px; font-weight: 500; flex: 1; }
+.pillar-progress-text { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); }
+.pillar-toggle { font-size: 10px; color: var(--ink3); transition: transform 0.2s; }
+.pillar-toggle.open { transform: rotate(180deg); }
+
+.checklist-items { padding: 4px 0 8px; }
+.checklist-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 20px 9px 36px;
+  transition: background 0.1s;
+  cursor: pointer;
+  position: relative;
+}
+.checklist-item:hover { background: rgba(120,100,255,0.04); }
+.check-box {
+  width: 16px; height: 16px; border-radius: 3px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  font-size: 9px;
+}
+.check-box.checked { background: var(--green); border-color: var(--green); color: white; }
+.check-box.flagged { background: rgba(224,92,106,0.15); border-color: var(--red); color: var(--red); }
+.check-box.uploaded { background: rgba(91,110,225,0.15); border-color: var(--indigo); color: var(--indigo); }
+
+.item-info { flex: 1; min-width: 0; }
+.item-name { font-size: 12px; color: var(--ink); }
+.item-name.flagged { color: var(--red); }
+.item-meta { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); margin-top: 1px; }
+.item-actions { display: flex; gap: 6px; opacity: 0; transition: opacity 0.15s; }
+.checklist-item:hover .item-actions { opacity: 1; }
+.mini-btn {
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--ink2);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mini-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+.mini-btn.upload { border-color: rgba(91,110,225,0.4); color: var(--indigo); }
+
+/* Red flag tag */
+.flag-tag {
+  position: absolute;
+  right: 16px;
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--red);
+  background: rgba(224,92,106,0.1);
+  border: 1px solid rgba(224,92,106,0.25);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+/* Side panel */
+.side-panels { display: flex; flex-direction: column; gap: 14px; }
+
+.panel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); }
+.panel-body { padding: 14px 16px; }
+
+/* Property summary */
+.prop-field { margin-bottom: 10px; }
+.prop-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
+.prop-value { font-size: 12px; color: var(--ink); }
+.prop-value.mono { font-family: var(--font-mono); }
+.prop-value.highlight { color: var(--gold); font-family: var(--font-display); font-size: 15px; }
+
+/* Red flags panel */
+.flag-list { display: flex; flex-direction: column; gap: 8px; }
+.flag-item {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border-left: 3px solid;
+  background: rgba(9,9,15,0.4);
+  animation: flagIn 0.3s ease both;
+}
+@keyframes flagIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
+.flag-item.critical { border-left-color: var(--red); background: rgba(224,92,106,0.06); }
+.flag-item.warning { border-left-color: var(--orange); background: rgba(224,128,48,0.06); }
+.flag-item.info { border-left-color: var(--indigo); background: rgba(91,110,225,0.06); }
+.flag-severity {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.flag-item.critical .flag-severity { color: var(--red); }
+.flag-item.warning .flag-severity { color: var(--orange); }
+.flag-item.info .flag-severity { color: var(--indigo); }
+.flag-desc { font-size: 11px; color: var(--ink2); line-height: 1.4; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item {
+  display: flex; gap: 10px;
+  padding: 8px 0;
+  position: relative;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 22px;
+  width: 1px; height: calc(100% - 4px);
+  background: var(--border);
+}
+.tl-item:last-child::before { display: none; }
+.tl-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--bg);
+  flex-shrink: 0;
+  margin-top: 2px;
+  z-index: 1;
+}
+.tl-dot.done { background: var(--green); border-color: var(--green); }
+.tl-dot.active { background: var(--indigo); border-color: var(--indigo); box-shadow: 0 0 8px var(--indigo); }
+.tl-dot.warn { background: var(--orange); border-color: var(--orange); }
+.tl-content { flex: 1; }
+.tl-event { font-size: 11px; color: var(--ink2); }
+.tl-time { font-family: var(--font-mono); font-size: 9px; color: var(--ink3); margin-top: 1px; }
+
+/* ══════════════════════════════════════
+   NEW CASE MODAL
+══════════════════════════════════════ */
+.modal-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(9,9,15,0.8);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-lg);
+  width: 560px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.93) translateY(16px)} to{opacity:1;transform:none} }
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; }
+.modal-close {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  transition: all 0.15s;
+}
+.modal-close:hover { background: rgba(224,92,106,0.15); color: var(--red); border-color: var(--red); }
+.modal-body { padding: 20px 24px; }
+.modal-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+
+/* Form elements */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+.form-input, .form-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus { border-color: var(--indigo); box-shadow: 0 0 0 2px rgba(91,110,225,0.12); }
+.form-select { appearance: none; cursor: pointer; }
+.form-input::placeholder { color: var(--ink3); }
+
+.form-hint { font-family: var(--font-mono); font-size: 9px; color: var(--ink3); }
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.type-option {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--surface2);
+}
+.type-option:hover { border-color: var(--border2); }
+.type-option.selected { border-color: var(--indigo); background: rgba(91,110,225,0.1); }
+.type-option-icon { font-size: 20px; margin-bottom: 4px; }
+.type-option-name { font-family: var(--font-mono); font-size: 10px; color: var(--ink2); }
+.type-option.selected .type-option-name { color: var(--indigo); }
+
+/* Btn */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-weight: 500;
+}
+.btn.ghost { background: var(--surface2); border: 1px solid var(--border); color: var(--ink2); }
+.btn.ghost:hover { border-color: var(--border2); color: var(--ink); }
+.btn.primary { background: linear-gradient(135deg, var(--indigo), var(--violet)); color: white; box-shadow: 0 2px 12px rgba(91,110,225,0.3); }
+.btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(91,110,225,0.4); }
+.btn.danger { background: rgba(224,92,106,0.15); color: var(--red); border: 1px solid rgba(224,92,106,0.3); }
+.btn.danger:hover { background: rgba(224,92,106,0.25); }
+.btn.gold { background: linear-gradient(135deg, #c9a84c, #a07830); color: white; box-shadow: 0 2px 12px rgba(201,168,76,0.25); }
+.btn.gold:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,168,76,0.35); }
+
+/* ══════════════════════════════════════
+   AI DOCUMENT ANALYSIS PAGE
+══════════════════════════════════════ */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(120,100,255,0.02);
+  position: relative;
+}
+.upload-zone:hover, .upload-zone.drag {
+  border-color: var(--indigo);
+  background: rgba(91,110,225,0.06);
+}
+.upload-zone input[type=file] { display: none; }
+.upload-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+.upload-text { font-family: var(--font-display); font-size: 18px; color: var(--ink2); }
+.upload-sub { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); margin-top: 6px; }
+.upload-types {
+  display: flex; gap: 6px; justify-content: center;
+  margin-top: 12px; flex-wrap: wrap;
+}
+.upload-type-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  color: var(--ink3);
+}
+
+.analysis-result {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeIn 0.4s ease both;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.analysis-header {
+  padding: 14px 20px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.analysis-doc-name { font-family: var(--font-mono); font-size: 11px; color: var(--ink2); }
+.extracted-fields { padding: 16px 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.field-item { }
+.field-key { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
+.field-val { font-size: 12px; color: var(--ink); }
+.field-val.flag { color: var(--red); }
+.field-val.ok { color: var(--green); }
+.ai-findings {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: rgba(9,9,15,0.3);
+}
+.ai-label {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--violet);
+  margin-bottom: 8px;
+}
+.ai-label::before {
+  content: '✦';
+  font-size: 10px;
+  animation: spin 4s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-text { font-size: 12px; color: var(--ink2); line-height: 1.6; }
+
+/* ══════════════════════════════════════
+   REPORT PAGE
+══════════════════════════════════════ */
+.report-preview {
+  background: #fff;
+  color: #1a1a2e;
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  max-width: 760px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.report-header-bar {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  border-bottom: 2px solid #1a1a2e;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.report-logo-text { font-size: 28px; font-weight: 700; color: #1a1a2e; letter-spacing: -0.02em; }
+.report-logo-text span { color: #5b6ee1; }
+.report-meta-block { text-align: right; font-size: 11px; color: #666; font-family: 'DM Mono', monospace; }
+.report-case-title { font-size: 22px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+.report-address { font-size: 13px; color: #444; margin-bottom: 16px; }
+.report-section { margin-bottom: 20px; }
+.report-section-title {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5b6ee1;
+  border-bottom: 1px solid #e0e0f0;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+.report-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; font-size: 13px; border-bottom: 1px dotted #e8e8f0; }
+.report-row-key { color: #444; }
+.report-row-val { font-weight: 500; color: #1a1a2e; text-align: right; max-width: 60%; }
+.report-row-val.ok { color: #2a7a52; }
+.report-row-val.flag { color: #c0303e; }
+.report-flag-box {
+  background: #fff5f5;
+  border: 1px solid #f0c0c5;
+  border-left: 4px solid #c0303e;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.report-flag-sev { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #c0303e; margin-bottom: 3px; }
+.report-ok-box {
+  background: #f0faf5;
+  border: 1px solid #b0e0c8;
+  border-left: 4px solid #2a7a52;
+  padding: 8px 14px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #2a7a52;
+}
+.report-footer {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid #ddd;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-size: 10px;
+  color: #999;
+  font-family: 'DM Mono', monospace;
+}
+.report-stamp {
+  width: 80px; height: 80px;
+  border: 3px solid rgba(91,110,225,0.4);
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  color: rgba(91,110,225,0.6);
+  font-size: 8px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+  transform: rotate(-12deg);
+}
+
+/* ══════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+  gap: 12px;
+}
+.empty-icon { font-size: 48px; opacity: 0.2; }
+.empty-title { font-family: var(--font-display); font-size: 22px; color: var(--ink2); }
+.empty-sub { font-family: var(--font-mono); font-size: 11px; color: var(--ink3); max-width: 300px; line-height: 1.6; }
+
+/* ══════════════════════════════════════
+   TOAST NOTIFICATIONS
+══════════════════════════════════════ */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+  pointer-events: all;
+  animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  min-width: 260px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+@keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--indigo); }
+.toast-icon { font-size: 14px; }
+.toast.out { animation: toastOut 0.25s ease forwards; }
+@keyframes toastOut { to{opacity:0;transform:translateX(20px)} }
+
+/* ══════════════════════════════════════
+   SEARCH & FILTER BAR
+══════════════════════════════════════ */
+.filter-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.search-wrap {
+  position: relative; flex: 1; max-width: 320px;
+}
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink3); font-size: 12px; }
+.search-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 12px 7px 30px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--indigo); }
+.search-input::placeholder { color: var(--ink3); }
+
+.filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-chip {
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-chip:hover { border-color: var(--border2); color: var(--ink2); }
+.filter-chip.active { background: rgba(91,110,225,0.12); border-color: rgba(91,110,225,0.4); color: var(--indigo); }
+
+/* ══════════════════════════════════════
+   SETTINGS PAGE
+══════════════════════════════════════ */
+.settings-grid { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 24px 32px; }
+.settings-nav { display: flex; flex-direction: column; gap: 2px; }
+.settings-nav-item {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.settings-nav-item:hover { background: var(--surface); color: var(--ink); }
+.settings-nav-item.active { background: rgba(91,110,225,0.1); color: var(--indigo); font-weight: 500; }
+.settings-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.settings-panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+.settings-panel-title { font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.settings-panel-body { padding: 20px; }
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-info { flex: 1; }
+.settings-row-label { font-size: 13px; color: var(--ink); font-weight: 500; }
+.settings-row-desc { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.toggle-switch {
+  width: 36px; height: 20px;
+  background: var(--surface2);
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--ink3);
+  transition: all 0.2s;
+}
+.toggle-switch.on { background: rgba(91,110,225,0.3); border-color: var(--indigo); }
+.toggle-switch.on::after { left: 18px; background: var(--indigo); }
+
+/* ══════════════════════════════════════
+   LOADING STATE
+══════════════════════════════════════ */
+.loading-bar {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--indigo), var(--violet), transparent);
+  background-size: 200% 100%;
+  animation: loadingSlide 1.5s linear infinite;
+  border-radius: 1px;
+}
+@keyframes loadingSlide { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink3); }
+
+/* Responsive helpers */
+@media (max-width: 1024px) {
+  .case-detail-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
 </head>
 <body>
+
+<!-- Background -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- App Shell -->
+<div class="app-shell">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="logo-wrap">
+      <div class="logo-icon">🏛</div>
+      <div class="logo-text">Ktima<span>Check</span></div>
+      <div class="logo-badge">Beta</div>
+    </div>
+    <div class="topbar-center">
+      <div class="topbar-dot"></div>
+      <span>System operational · Ktimatologio connected</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="openNewCase()">＋ New Case</button>
+      <button class="topbar-btn primary" onclick="showPage('report')">📄 Generate Report</button>
+      <div class="avatar" title="Νίκος Παπαδόπουλος">ΝΠ</div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">⬛</span> Dashboard
+        <span class="nav-badge">8</span>
+      </div>
+      <div class="nav-item" onclick="showPage('cases',this)">
+        <span class="nav-icon">📁</span> Cases
+        <span class="nav-badge red">2</span>
+      </div>
+      <div class="nav-item" onclick="showPage('ai',this)">
+        <span class="nav-icon">✦</span> AI Analysis
+      </div>
+      <div class="nav-item" onclick="showPage('report',this)">
+        <span class="nav-icon">📑</span> Reports
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Tools</div>
+      <div class="nav-item" onclick="showPage('checklist',this)">
+        <span class="nav-icon">☑</span> Checklists
+      </div>
+      <div class="nav-item" onclick="showPage('templates',this)">
+        <span class="nav-icon">📋</span> Templates
+      </div>
+      <div class="nav-item" onclick="showPage('clients',this)">
+        <span class="nav-icon">👤</span> Clients
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">System</div>
+      <div class="nav-item" onclick="showPage('settings',this)">
+        <span class="nav-icon">⚙</span> Settings
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">ΝΠ</div>
+        <div class="user-info">
+          <div class="user-name">Νίκος Παπαδόπουλος</div>
+          <div class="user-role">Senior Lawyer · Athens</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main" id="mainContent">
+
+    <!-- ════════════════ DASHBOARD ════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Good morning, <span>Νίκος</span></div>
+          <div class="page-subtitle">You have 2 flagged cases and 3 pending document uploads today.</div>
+        </div>
+        <button class="btn primary" onclick="openNewCase()">＋ New Case</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Cases</div>
+          <div class="stat-value">8</div>
+          <div class="stat-change up">↑ 2 this week</div>
+          <div class="stat-icon">📁</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Flagged Issues</div>
+          <div class="stat-value" style="color:var(--red)">4</div>
+          <div class="stat-change warn">⚠ Needs attention</div>
+          <div class="stat-icon">🚩</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Docs Analyzed</div>
+          <div class="stat-value">47</div>
+          <div class="stat-change up">↑ 12 this month</div>
+          <div class="stat-icon">📄</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Reports Generated</div>
+          <div class="stat-value">23</div>
+          <div class="stat-change up">↑ 5 this month</div>
+          <div class="stat-icon">📑</div>
+        </div>
+      </div>
+
+      <div class="section-wrap">
+        <div class="section-header">
+          <div class="section-title">Recent Cases</div>
+          <div class="section-actions">
+            <div class="filter-chip active" onclick="filterCases('all',this)">All</div>
+            <div class="filter-chip" onclick="filterCases('flagged',this)">Flagged</div>
+            <div class="filter-chip" onclick="filterCases('active',this)">Active</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-header-cell">Case / Property</div>
+            <div class="table-header-cell">Client</div>
+            <div class="table-header-cell">Type</div>
+            <div class="table-header-cell">Status</div>
+            <div class="table-header-cell">Progress</div>
+            <div class="table-header-cell">Action</div>
+          </div>
+
+          <div id="dashboardTableBody"><div style="padding:40px;text-align:center;color:var(--ink3);font-family:var(--font-mono);font-size:11px">Loading cases from database…</div></div>
+          <div class="table-row" onclick="showCase('KTIMA-2401')" style="animation-delay:0.05s;display:none">
+            <div>
+              <div class="case-name">KTIMA-2401</div>
+              <div class="case-addr">Κηφισιά, Αττική · KAEK 050230501001</div>
+            </div>
+            <div class="case-client">Αλέξανδρος Παπαδάκης</div>
+            <div><span class="badge draft">Apartment</span></div>
+            <div><span class="badge flagged">Flagged</span></div>
+            <div class="progress-cell">
+              <div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:62%"></div></div>
+              <div class="progress-pct">62%</div>
+            </div>
+            <div><button class="action-btn" onclick="event.stopPropagation();showCase('KTIMA-2401')">Open →</button></div>
+          </div>
+
+          <div class="table-row" onclick="showCase('KTIMA-2402')" style="animation-delay:0.1s">
+            <div>
+              <div class="case-name">KTIMA-2402</div>
+              <div class="case-addr">Γλυφάδα, Αττική · KAEK 050130809002</div>
+            </div>
+            <div class="case-client">Maria Schneider</div>
+            <div><span class="badge draft">Villa</span></div>
+            <div><span class="badge active">Active</span></div>
+            <div class="progress-cell">
+              <div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:85%"></div></div>
+              <div class="progress-pct">85%</div>
+            </div>
+            <div><button class="action-btn" onclick="event.stopPropagation();showPage('report')">Report →</button></div>
+          </div>
+
+          <div class="table-row" onclick="showCase('KTIMA-2403')" style="animation-delay:0.15s">
+            <div>
+              <div class="case-name">KTIMA-2403</div>
+              <div class="case-addr">Θεσσαλονίκη, Κ. Μακεδονία · KAEK 120480302005</div>
+            </div>
+            <div class="case-client">Jin Wei (Golden Visa)</div>
+            <div><span class="badge draft">Commercial</span></div>
+            <div><span class="badge flagged">Flagged</span></div>
+            <div class="progress-cell">
+              <div class="progress-bar-bg"><div class="progress-bar-fill low" style="width:38%"></div></div>
+              <div class="progress-pct">38%</div>
+            </div>
+            <div><button class="action-btn" onclick="event.stopPropagation();showCase('KTIMA-2403')">Open →</button></div>
+          </div>
+
+          <div class="table-row" onclick="showCase('KTIMA-2404')" style="animation-delay:0.2s">
+            <div>
+              <div class="case-name">KTIMA-2404</div>
+              <div class="case-addr">Μύκονος, Ν. Αιγαίο · KAEK 330600101003</div>
+            </div>
+            <div class="case-client">Ahmed Al-Rashid</div>
+            <div><span class="badge draft">Land</span></div>
+            <div><span class="badge pending">Pending</span></div>
+            <div class="progress-cell">
+              <div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:55%"></div></div>
+              <div class="progress-pct">55%</div>
+            </div>
+            <div><button class="action-btn">Open →</button></div>
+          </div>
+
+          <div class="table-row" onclick="showCase('KTIMA-2405')" style="animation-delay:0.25s">
+            <div>
+              <div class="case-name">KTIMA-2405</div>
+              <div class="case-addr">Κολωνάκι, Αθήνα · KAEK 010100405002</div>
+            </div>
+            <div class="case-client">Σοφία Μαρκοπούλου</div>
+            <div><span class="badge draft">Apartment</span></div>
+            <div><span class="badge complete">Complete</span></div>
+            <div class="progress-cell">
+              <div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:100%"></div></div>
+              <div class="progress-pct">100%</div>
+            </div>
+            <div><button class="action-btn" onclick="event.stopPropagation();showPage('report')">Report →</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ CASE DETAIL ════════════════ -->
+    <div class="page" id="page-case-detail">
+      <div class="page-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <button class="btn ghost" onclick="showPage('dashboard')" style="padding:4px 10px;font-size:9px">← Back</button>
+            <span class="badge flagged">Flagged</span>
+          </div>
+          <div class="page-title" id="caseDetailTitle">KTIMA-2401</div>
+          <div class="page-subtitle" id="caseDetailAddr">Κηφισιά, Αττική · Αλέξανδρος Παπαδάκης · Apartment</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost" onclick="showPage('ai')">✦ Analyze Docs</button>
+          <button class="btn gold" onclick="showPage('report')">📑 Generate Report</button>
+        </div>
+      </div>
+
+      <div class="case-detail-grid">
+        <!-- Checklist -->
+        <div>
+          <div class="checklist-wrap">
+            <div class="checklist-header">
+              <div class="checklist-title">Due Diligence Checklist</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">12 / 20 complete</div>
+                <div class="loading-bar" style="width:80px;height:3px;border-radius:2px"></div>
+              </div>
+            </div>
+
+            <!-- Pillar 1 -->
+            <div class="pillar">
+              <div class="pillar-header" onclick="togglePillar(this)">
+                <span class="pillar-icon">🏛</span>
+                <span class="pillar-name">Title & Ownership (Κτηματολόγιο)</span>
+                <span class="pillar-progress-text">4/6</span>
+                <span class="pillar-toggle open">▼</span>
+              </div>
+              <div class="checklist-items">
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Cadastral Sheet (Κτηματολογικό Φύλλο)</div>
+                    <div class="item-meta">Uploaded 2 days ago · Extracted: KAEK 050230501001</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn">View</button>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Cadastral Diagram (Κτηματολογικό Διάγραμμα)</div>
+                    <div class="item-meta">Uploaded 2 days ago · 92m² recorded</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn">View</button>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box flagged">!</div>
+                  <div class="item-info">
+                    <div class="item-name flagged">Title Deed Chain — 20 Year Review</div>
+                    <div class="item-meta">Uploaded · ⚠ Gap detected in ownership chain (2009–2011)</div>
+                  </div>
+                  <div class="flag-tag">⚠ CRITICAL</div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Encumbrance Search (Βάρη / Υποθήκες)</div>
+                    <div class="item-meta">No active mortgages or seizures found</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn">View</button>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box"></div>
+                  <div class="item-info">
+                    <div class="item-name">Deed Registration Certificate</div>
+                    <div class="item-meta">Pending — awaiting from client</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn upload">↑ Upload</button>
+                    <button class="mini-btn">Request</button>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box uploaded">↑</div>
+                  <div class="item-info">
+                    <div class="item-name">KAEK Verification</div>
+                    <div class="item-meta">Matches cadastral records — 050230501001 ✓</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pillar 2 -->
+            <div class="pillar">
+              <div class="pillar-header" onclick="togglePillar(this)">
+                <span class="pillar-icon">💰</span>
+                <span class="pillar-name">Tax & Financial Clearances (AADE)</span>
+                <span class="pillar-progress-text">3/4</span>
+                <span class="pillar-toggle open">▼</span>
+              </div>
+              <div class="checklist-items">
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Tax Clearance Certificate (Φορολογική Ενημερότητα)</div>
+                    <div class="item-meta">Valid until 31/03/2026 · No outstanding debts</div>
+                  </div>
+                  <div class="item-actions"><button class="mini-btn">View</button></div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">ENFIA Certificate (5-Year)</div>
+                    <div class="item-meta">Paid for 2020–2024 · Certificate valid</div>
+                  </div>
+                  <div class="item-actions"><button class="mini-btn">View</button></div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box flagged">!</div>
+                  <div class="item-info">
+                    <div class="item-name flagged">E9 Declaration Match</div>
+                    <div class="item-meta">⚠ E9 records 85m² — cadastral sheet shows 92m² mismatch</div>
+                  </div>
+                  <div class="flag-tag">⚠ WARNING</div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">ENFIA Validity Verification</div>
+                    <div class="item-meta">Verified via Taxisnet · Authentic</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pillar 3 -->
+            <div class="pillar">
+              <div class="pillar-header" onclick="togglePillar(this)">
+                <span class="pillar-icon">👷</span>
+                <span class="pillar-name">Technical & Urban Planning</span>
+                <span class="pillar-progress-text">3/6</span>
+                <span class="pillar-toggle">▼</span>
+              </div>
+              <div class="checklist-items" style="display:none">
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Building Permit (Οικοδομική Άδεια)</div>
+                    <div class="item-meta">Permit No. 4521/1998 · No amendments</div>
+                  </div>
+                  <div class="item-actions"><button class="mini-btn">View</button></div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box"></div>
+                  <div class="item-info">
+                    <div class="item-name">Floor Plans / Architectural Drawings</div>
+                    <div class="item-meta">Pending — request from seller</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn upload">↑ Upload</button>
+                    <button class="mini-btn">Request</button>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Engineer Certificate (No Illegal Constructions)</div>
+                    <div class="item-meta">Issued by Γ. Αθανασίου ΠΕ · 14/01/2026</div>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box"></div>
+                  <div class="item-info">
+                    <div class="item-name">Energy Performance Certificate (ΠΕΑ)</div>
+                    <div class="item-meta">Pending</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn upload">↑ Upload</button>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Topographic Diagram</div>
+                    <div class="item-meta">Uploaded · Matches cadastral boundaries</div>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box"></div>
+                  <div class="item-info">
+                    <div class="item-name">Urban Planning Compliance (Πολεοδομία)</div>
+                    <div class="item-meta">Pending</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn upload">↑ Upload</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pillar 4 -->
+            <div class="pillar">
+              <div class="pillar-header" onclick="togglePillar(this)">
+                <span class="pillar-icon">📋</span>
+                <span class="pillar-name">Seller-Specific Checks</span>
+                <span class="pillar-progress-text">2/4</span>
+                <span class="pillar-toggle">▼</span>
+              </div>
+              <div class="checklist-items" style="display:none">
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Insurance Clearance (ΕΦΚΑ)</div>
+                    <div class="item-meta">No outstanding social security debts</div>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box checked">✓</div>
+                  <div class="item-info">
+                    <div class="item-name">Seller Identity & AFM Verification</div>
+                    <div class="item-meta">AFM 123456789 verified · Matches title deed</div>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box"></div>
+                  <div class="item-info">
+                    <div class="item-name">Power of Attorney (if applicable)</div>
+                    <div class="item-meta">Not required for this transaction</div>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-box"></div>
+                  <div class="item-info">
+                    <div class="item-name">Lease Documentation</div>
+                    <div class="item-meta">Property reportedly vacant — confirm with seller</div>
+                  </div>
+                  <div class="item-actions">
+                    <button class="mini-btn">Request</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side panels -->
+        <div class="side-panels">
+          <!-- Property Info -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">Property Details</div>
+              <button class="mini-btn">Edit</button>
+            </div>
+            <div class="panel-body">
+              <div class="prop-field">
+                <div class="prop-label">Property Value</div>
+                <div class="prop-value highlight">€ 420,000</div>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Address</div>
+                <div class="prop-value">Λεωφ. Κηφισίας 142, Κηφισιά</div>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">KAEK Code</div>
+                <div class="prop-value mono">050230501001/0/1</div>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Type / Area</div>
+                <div class="prop-value">Apartment · 92m²</div>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Buyer</div>
+                <div class="prop-value">Αλέξανδρος Παπαδάκης (Greek Citizen)</div>
+              </div>
+              <div class="prop-field">
+                <div class="prop-label">Target Close</div>
+                <div class="prop-value mono">15 April 2026</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Red Flags -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title" style="color:var(--red)">🚩 Red Flags (2)</div>
+            </div>
+            <div class="panel-body">
+              <div class="flag-list">
+                <div class="flag-item critical">
+                  <div class="flag-severity">⬛ Critical</div>
+                  <div class="flag-desc">Ownership chain gap detected between 2009–2011. Title transfer from estate missing from Land Registry records.</div>
+                </div>
+                <div class="flag-item warning">
+                  <div class="flag-severity">◈ Warning</div>
+                  <div class="flag-desc">E9 declaration shows 85m² but cadastral sheet records 92m². Seller must submit amended E9 before closing.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">Activity</div>
+            </div>
+            <div class="panel-body">
+              <div class="timeline">
+                <div class="tl-item">
+                  <div class="tl-dot warn"></div>
+                  <div class="tl-content">
+                    <div class="tl-event">E9 mismatch flagged by AI analysis</div>
+                    <div class="tl-time">Today, 09:14</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-dot done"></div>
+                  <div class="tl-content">
+                    <div class="tl-event">ENFIA certificate uploaded & verified</div>
+                    <div class="tl-time">Yesterday, 16:30</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-dot done"></div>
+                  <div class="tl-content">
+                    <div class="tl-event">Cadastral sheet parsed — KAEK confirmed</div>
+                    <div class="tl-time">2 days ago, 11:05</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <div class="tl-dot active"></div>
+                  <div class="tl-content">
+                    <div class="tl-event">Case created · Checklist generated</div>
+                    <div class="tl-time">3 days ago</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ AI ANALYSIS ════════════════ -->
+    <div class="page" id="page-ai">
+      <div class="page-header">
+        <div>
+          <div class="page-title">✦ AI Document Analysis</div>
+          <div class="page-subtitle">Upload any property document — AI extracts key data and flags issues automatically.</div>
+        </div>
+      </div>
+
+      <div style="padding:0 32px 32px">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDrop(event)">
+          <input type="file" id="fileInput" accept=".pdf,.jpg,.png" onchange="handleFileSelect(event)"/>
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Drop document here or click to upload</div>
+          <div class="upload-sub">AI will extract data, cross-check fields, and flag red flags automatically</div>
+          <div class="upload-types">
+            <span class="upload-type-tag">Cadastral Sheet</span>
+            <span class="upload-type-tag">Title Deed</span>
+            <span class="upload-type-tag">ENFIA Certificate</span>
+            <span class="upload-type-tag">Tax Clearance</span>
+            <span class="upload-type-tag">Building Permit</span>
+            <span class="upload-type-tag">Engineer Certificate</span>
+          </div>
+        </div>
+
+        <div id="analysisResults" style="margin-top:20px;display:flex;flex-direction:column;gap:14px"></div>
+
+        <!-- Pre-populated demo result -->
+        <div class="analysis-result" style="margin-top:20px">
+          <div class="analysis-header">
+            <div>
+              <div class="analysis-doc-name">📄 ktimatologiko_phyllo_ktima2401.pdf</div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">Cadastral Sheet · Analyzed 2 days ago · 0.8s</div>
+            </div>
+            <span class="badge active">Parsed</span>
+          </div>
+          <div class="extracted-fields">
+            <div class="field-item">
+              <div class="field-key">Owner Name</div>
+              <div class="field-val">Γεώργιος Παπαδάκης</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">KAEK Code</div>
+              <div class="field-val ok">050230501001/0/1 ✓</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Recorded Area</div>
+              <div class="field-val flag">92m² ≠ E9 (85m²) ⚠</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Encumbrances</div>
+              <div class="field-val ok">None found ✓</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Registration Date</div>
+              <div class="field-val">12/06/2003</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Property Type</div>
+              <div class="field-val">Διαμέρισμα (Apartment)</div>
+            </div>
+          </div>
+          <div class="ai-findings">
+            <div class="ai-label">AI Findings</div>
+            <div class="ai-text">
+              Cadastral sheet successfully parsed. <strong style="color:var(--red)">Critical discrepancy detected:</strong> the recorded area of 92m² does not match the E9 tax declaration which states 85m². This mismatch must be resolved before closing — the seller is required to submit an amended E9 via myAADE. Additionally, a gap in the ownership chain between 2009–2011 was identified during title deed review; missing inheritance transfer from estate of Μαρία Παπαδάκη should be located and filed at the Cadastre office. All other fields verified successfully.
+            </div>
+          </div>
+        </div>
+
+        <div class="analysis-result" style="margin-top:14px">
+          <div class="analysis-header">
+            <div>
+              <div class="analysis-doc-name">📄 enfia_pistopoiitiko_2024.pdf</div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">ENFIA Certificate · Analyzed yesterday · 0.4s</div>
+            </div>
+            <span class="badge complete">Verified</span>
+          </div>
+          <div class="extracted-fields">
+            <div class="field-item">
+              <div class="field-key">Taxpayer AFM</div>
+              <div class="field-val ok">123456789 ✓</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Years Covered</div>
+              <div class="field-val ok">2020–2024 (5 years) ✓</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Certificate Validity</div>
+              <div class="field-val ok">Valid until 31/03/2026 ✓</div>
+            </div>
+            <div class="field-item">
+              <div class="field-key">Outstanding Amount</div>
+              <div class="field-val ok">€0.00 ✓</div>
+            </div>
+          </div>
+          <div class="ai-findings">
+            <div class="ai-label">AI Findings</div>
+            <div class="ai-text">ENFIA certificate verified. All 5 years (2020–2024) confirmed paid. Certificate is valid and will expire 31/03/2026 — well within the expected closing timeline. AFM matches seller identification documents. No issues detected.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ REPORT PAGE ════════════════ -->
+    <div class="page" id="page-report">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📑 Due Diligence Report</div>
+          <div class="page-subtitle">Professional bilingual report — Greek & English — ready for client and notary.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost">🇬🇷 Greek</button>
+          <button class="btn ghost" style="border-color:var(--indigo);color:var(--indigo)">🇬🇧 English</button>
+          <button class="btn gold" onclick="showToast('success','Report downloaded as PDF')">⬇ Download PDF</button>
+        </div>
+      </div>
+
+      <div style="padding:0 32px 48px;display:flex;justify-content:center">
+        <div class="report-preview">
+          <div class="report-header-bar">
+            <div>
+              <div class="report-logo-text">Ktima<span>Check</span></div>
+              <div style="font-size:11px;color:#666;font-family:'DM Mono',monospace;margin-top:2px">Property Due Diligence Platform</div>
+            </div>
+            <div class="report-meta-block">
+              <div>Case: KTIMA-2401</div>
+              <div>Date: 26/03/2026</div>
+              <div>Ref: KTC/2026/0401</div>
+              <div style="margin-top:4px;color:#5b6ee1">CONFIDENTIAL</div>
+            </div>
+          </div>
+
+          <div class="report-case-title">Due Diligence Report — Κηφισιά Apartment</div>
+          <div class="report-address">Λεωφ. Κηφισίας 142, 145 64 Κηφισιά, Αττική · KAEK 050230501001/0/1</div>
+
+          <div class="report-section">
+            <div class="report-section-title">Property Summary</div>
+            <div class="report-row"><span class="report-row-key">Property Type</span><span class="report-row-val">Residential Apartment (Διαμέρισμα)</span></div>
+            <div class="report-row"><span class="report-row-key">Recorded Area (Cadastre)</span><span class="report-row-val">92 m²</span></div>
+            <div class="report-row"><span class="report-row-key">KAEK</span><span class="report-row-val">050230501001/0/1</span></div>
+            <div class="report-row"><span class="report-row-key">Current Legal Owner</span><span class="report-row-val">Γεώργιος Παπαδάκης</span></div>
+            <div class="report-row"><span class="report-row-key">Buyer</span><span class="report-row-val">Αλέξανδρος Παπαδάκης (Greek Citizen)</span></div>
+            <div class="report-row"><span class="report-row-key">Agreed Purchase Price</span><span class="report-row-val">€ 420,000</span></div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-section-title">Issues & Red Flags</div>
+            <div class="report-flag-box">
+              <div class="report-flag-sev">🔴 CRITICAL — Action Required Before Closing</div>
+              <strong>Ownership Chain Gap (2009–2011):</strong> Title review reveals a missing inheritance transfer from the estate of Μαρία Παπαδάκη. The deed transferring ownership to the current seller (Γ. Παπαδάκης) is not recorded at the Land Registry for this period. This must be located and registered before the transaction can proceed.
+            </div>
+            <div class="report-flag-box" style="border-left-color:#e08030;background:#fff9f0">
+              <div class="report-flag-sev" style="color:#e08030">🟠 WARNING — Seller Action Required</div>
+              <strong>E9 Declaration Mismatch:</strong> The E9 tax declaration records 85m² while the Ktimatologio cadastral sheet records 92m². The seller must file an amended E9 declaration via myAADE (aade.gr) to correct this discrepancy before notarial deed execution.
+            </div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-section-title">Verification Results</div>
+            <div class="report-ok-box">✅ Title ownership confirmed — seller is registered legal owner in Ktimatologio</div>
+            <div class="report-ok-box">✅ No encumbrances, mortgages or seizures found on the property</div>
+            <div class="report-ok-box">✅ ENFIA paid in full for years 2020–2024 — certificate valid until 31/03/2026</div>
+            <div class="report-ok-box">✅ Tax clearance certificate valid — no outstanding tax obligations</div>
+            <div class="report-ok-box">✅ Insurance clearance (ΕΦΚΑ) — no outstanding social security debts</div>
+            <div class="report-ok-box">✅ Building permit verified (No. 4521/1998) — engineer certificate confirms no illegal structures</div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-section-title">Outstanding Documents</div>
+            <div class="report-row"><span class="report-row-key">Deed Registration Certificate</span><span class="report-row-val flag">Pending</span></div>
+            <div class="report-row"><span class="report-row-key">Floor Plans / Architectural Drawings</span><span class="report-row-val flag">Pending</span></div>
+            <div class="report-row"><span class="report-row-key">Energy Performance Certificate (ΠΕΑ)</span><span class="report-row-val flag">Pending</span></div>
+            <div class="report-row"><span class="report-row-key">Urban Planning Compliance</span><span class="report-row-val flag">Pending</span></div>
+          </div>
+
+          <div class="report-footer">
+            <div>
+              <div>Prepared by: Νίκος Παπαδόπουλος, Δικηγόρος</div>
+              <div>DSA Reg: 1234567 · Generated via KtimaCheck v1.0</div>
+              <div style="margin-top:4px;font-size:9px;color:#bbb">This report is a professional due diligence summary. It does not substitute full legal advice.</div>
+            </div>
+            <div class="report-stamp">
+              <div style="font-size:16px;font-weight:700;color:rgba(91,110,225,0.7)">KC</div>
+              <div>VERIFIED</div>
+              <div>26/03/2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ CASES LIST ════════════════ -->
+    <div class="page" id="page-cases">
+      <div class="page-header">
+        <div>
+          <div class="page-title">All Cases</div>
+          <div class="page-subtitle">Manage all active and archived due diligence cases.</div>
+        </div>
+        <button class="btn primary" onclick="openNewCase()">＋ New Case</button>
+      </div>
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Search by case ID, address, client…"/>
+        </div>
+        <div class="filter-chips">
+          <div class="filter-chip active">All (8)</div>
+          <div class="filter-chip">Active (5)</div>
+          <div class="filter-chip">Flagged (2)</div>
+          <div class="filter-chip">Complete (1)</div>
+        </div>
+      </div>
+      <div class="section-wrap" style="padding-top:16px">
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-header-cell">Case / Property</div>
+            <div class="table-header-cell">Client</div>
+            <div class="table-header-cell">Type</div>
+            <div class="table-header-cell">Status</div>
+            <div class="table-header-cell">Progress</div>
+            <div class="table-header-cell">Action</div>
+          </div>
+          <div class="table-row" onclick="showCase('KTIMA-2401')"><div><div class="case-name">KTIMA-2401</div><div class="case-addr">Κηφισιά, Αττική</div></div><div class="case-client">Αλέξανδρος Παπαδάκης</div><div><span class="badge draft">Apartment</span></div><div><span class="badge flagged">Flagged</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:62%"></div></div><div class="progress-pct">62%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row" onclick="showCase('KTIMA-2402')"><div><div class="case-name">KTIMA-2402</div><div class="case-addr">Γλυφάδα, Αττική</div></div><div class="case-client">Maria Schneider</div><div><span class="badge draft">Villa</span></div><div><span class="badge active">Active</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:85%"></div></div><div class="progress-pct">85%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row" onclick="showCase('KTIMA-2403')"><div><div class="case-name">KTIMA-2403</div><div class="case-addr">Θεσσαλονίκη</div></div><div class="case-client">Jin Wei</div><div><span class="badge draft">Commercial</span></div><div><span class="badge flagged">Flagged</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill low" style="width:38%"></div></div><div class="progress-pct">38%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row"><div><div class="case-name">KTIMA-2404</div><div class="case-addr">Μύκονος, Ν. Αιγαίο</div></div><div class="case-client">Ahmed Al-Rashid</div><div><span class="badge draft">Land</span></div><div><span class="badge pending">Pending</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:55%"></div></div><div class="progress-pct">55%</div></div><div><button class="action-btn">Open →</button></div></div>
+          <div class="table-row" onclick="showPage('report')"><div><div class="case-name">KTIMA-2405</div><div class="case-addr">Κολωνάκι, Αθήνα</div></div><div class="case-client">Σοφία Μαρκοπούλου</div><div><span class="badge draft">Apartment</span></div><div><span class="badge complete">Complete</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:100%"></div></div><div class="progress-pct">100%</div></div><div><button class="action-btn">Report →</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ CHECKLIST PAGE ════════════════ -->
+    <div class="page" id="page-checklist">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Checklist Templates</div>
+          <div class="page-subtitle">Pre-built checklists for different property types and buyer profiles.</div>
+        </div>
+      </div>
+      <div class="section-wrap" style="padding-top:24px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+          <div class="panel-card" style="cursor:pointer" onclick="showToast('info','Checklist template loaded')">
+            <div class="panel-body" style="padding:20px">
+              <div style="font-size:32px;margin-bottom:10px">🏠</div>
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:4px">Residential Apartment</div>
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Greek citizen buyer · Standard urban property</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">20 checks · 4 pillars</div>
+            </div>
+          </div>
+          <div class="panel-card" style="cursor:pointer" onclick="showToast('info','Golden Visa checklist loaded')">
+            <div class="panel-body" style="padding:20px">
+              <div style="font-size:32px;margin-bottom:10px">🌍</div>
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:4px">Golden Visa Property</div>
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Non-EU buyer · €250k–800k investment</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">26 checks · Includes Defence clearance</div>
+            </div>
+          </div>
+          <div class="panel-card" style="cursor:pointer" onclick="showToast('info','Land checklist loaded')">
+            <div class="panel-body" style="padding:20px">
+              <div style="font-size:32px;margin-bottom:10px">🌿</div>
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:4px">Land / Plot</div>
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Agricultural or urban land purchase</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">22 checks · Includes forestry checks</div>
+            </div>
+          </div>
+          <div class="panel-card" style="cursor:pointer">
+            <div class="panel-body" style="padding:20px">
+              <div style="font-size:32px;margin-bottom:10px">🏢</div>
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:4px">Commercial Property</div>
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Office, retail, or industrial space</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">24 checks · Company seller variant</div>
+            </div>
+          </div>
+          <div class="panel-card" style="cursor:pointer">
+            <div class="panel-body" style="padding:20px">
+              <div style="font-size:32px;margin-bottom:10px">🏝</div>
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:500;margin-bottom:4px">Island / Border Property</div>
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Dodecanese, N. Aegean, border regions</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">28 checks · Ministry of Defence required</div>
+            </div>
+          </div>
+          <div class="panel-card" style="cursor:pointer;border-style:dashed" onclick="showToast('info','Custom template builder coming soon')">
+            <div class="panel-body" style="padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px">
+              <div style="font-size:28px;margin-bottom:8px;opacity:0.3">＋</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">Create Custom Template</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ TEMPLATES PAGE ════════════════ -->
+    <div class="page" id="page-templates">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Document Request Templates</div>
+          <div class="page-subtitle">Pre-written emails and letters to request documents from sellers, authorities, and clients.</div>
+        </div>
+      </div>
+      <div class="section-wrap" style="padding-top:24px;display:flex;flex-direction:column;gap:12px">
+        <div class="analysis-result" style="cursor:pointer" onclick="showToast('success','Template copied to clipboard')">
+          <div class="analysis-header">
+            <div><div class="analysis-doc-name">📧 Request ENFIA Certificate from Seller</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">Greek · Email template · AADE portal reference included</div></div>
+            <button class="mini-btn">Copy</button>
+          </div>
+          <div style="padding:14px 20px;font-size:12px;color:var(--ink2);line-height:1.7;font-family:var(--font-mono)">
+            Αγαπητέ/ή [ΠΩΛΗΤΗΣ],<br/>
+            Στο πλαίσιο του νομικού ελέγχου για την αγοραπωλησία του ακινήτου επί της [ΔΙΕΥΘΥΝΣΗ], παρακαλώ να μου αποστείλετε το Πιστοποιητικό ΕΝΦΙΑ των τελευταίων 5 ετών (2020–2024), το οποίο εκδίδεται ηλεκτρονικά μέσω myAADE (myaade.gov.gr)...
+          </div>
+        </div>
+        <div class="analysis-result" style="cursor:pointer" onclick="showToast('success','Template copied to clipboard')">
+          <div class="analysis-header">
+            <div><div class="analysis-doc-name">📧 Request Tax Clearance Certificate</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">Greek · Email template</div></div>
+            <button class="mini-btn">Copy</button>
+          </div>
+        </div>
+        <div class="analysis-result" style="cursor:pointer" onclick="showToast('success','Template copied to clipboard')">
+          <div class="analysis-header">
+            <div><div class="analysis-doc-name">📧 Golden Visa Document Request (English)</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">English · For foreign buyers · Comprehensive</div></div>
+            <button class="mini-btn">Copy</button>
+          </div>
+        </div>
+        <div class="analysis-result" style="cursor:pointer">
+          <div class="analysis-header">
+            <div><div class="analysis-doc-name">📧 Request Building Permit from Πολεοδομία</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">Greek · Formal letter to Urban Planning authority</div></div>
+            <button class="mini-btn">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ CLIENTS PAGE ════════════════ -->
+    <div class="page" id="page-clients">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Clients</div>
+          <div class="page-subtitle">Manage buyer and seller profiles across all cases.</div>
+        </div>
+        <button class="btn primary" onclick="showToast('info','Add client form coming soon')">＋ Add Client</button>
+      </div>
+      <div class="section-wrap" style="padding-top:24px">
+        <div class="table-wrap">
+          <div class="table-header" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr">
+            <div class="table-header-cell">Client Name</div>
+            <div class="table-header-cell">Nationality</div>
+            <div class="table-header-cell">Type</div>
+            <div class="table-header-cell">Active Cases</div>
+            <div class="table-header-cell">Action</div>
+          </div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Αλέξανδρος Παπαδάκης</div><div class="case-client">🇬🇷 Greek</div><div><span class="badge active">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Maria Schneider</div><div class="case-client">🇩🇪 German</div><div><span class="badge complete">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Jin Wei</div><div class="case-client">🇨🇳 Chinese</div><div><span class="badge flagged">Golden Visa</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Ahmed Al-Rashid</div><div class="case-client">🇦🇪 Emirati</div><div><span class="badge pending">Golden Visa</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 0.8fr 0.8fr 1fr"><div class="case-name">Σοφία Μαρκοπούλου</div><div class="case-client">🇬🇷 Greek</div><div><span class="badge complete">Buyer</span></div><div class="case-client">1</div><div><button class="action-btn">View →</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ SETTINGS PAGE ════════════════ -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Settings</div>
+          <div class="page-subtitle">Configure your firm profile, AI preferences, and integrations.</div>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-nav">
+          <div class="settings-nav-item active">Profile</div>
+          <div class="settings-nav-item">AI & Analysis</div>
+          <div class="settings-nav-item">Notifications</div>
+          <div class="settings-nav-item">Integrations</div>
+          <div class="settings-nav-item">Billing</div>
+        </div>
+        <div class="settings-panel">
+          <div class="settings-panel-header">
+            <div class="settings-panel-title">Firm Profile</div>
+          </div>
+          <div class="settings-panel-body">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Lawyer Name</label><input class="form-input" value="Νίκος Παπαδόπουλος"/></div>
+              <div class="form-group"><label class="form-label">DSA Registration No.</label><input class="form-input" value="1234567"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Firm Name</label><input class="form-input" value="Παπαδόπουλος & Συνεργάτες"/></div>
+              <div class="form-group"><label class="form-label">City</label><input class="form-input" value="Athens"/></div>
+            </div>
+            <div class="form-row full">
+              <div class="form-group"><label class="form-label">Report Footer Text (Greek)</label><input class="form-input" value="Δικηγόρος Αθηνών · ΔΣΑ 1234567"/></div>
+            </div>
+            <div style="margin-top:8px">
+              <div class="settings-row">
+                <div class="settings-row-info">
+                  <div class="settings-row-label">Auto-generate bilingual reports</div>
+                  <div class="settings-row-desc">Generate Greek + English versions simultaneously</div>
+                </div>
+                <div class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-info">
+                  <div class="settings-row-label">AI red flag notifications</div>
+                  <div class="settings-row-desc">Send email when AI detects a critical issue</div>
+                </div>
+                <div class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row-info">
+                  <div class="settings-row-label">Golden Visa mode</div>
+                  <div class="settings-row-desc">Add Defence Ministry clearance to relevant checklists</div>
+                </div>
+                <div class="toggle-switch" onclick="this.classList.toggle('on')"></div>
+              </div>
+            </div>
+            <div style="margin-top:16px">
+              <button class="btn primary" onclick="showToast('success','Settings saved')">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- New Case Modal -->
+<div class="modal-backdrop" id="newCaseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Due Diligence Case</div>
+      <button class="modal-close" onclick="closeNewCase()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px">Property Type</div>
+      <div class="type-grid">
+        <div class="type-option selected" onclick="selectType(this)">
+          <div class="type-option-icon">🏠</div>
+          <div class="type-option-name">Apartment</div>
+        </div>
+        <div class="type-option" onclick="selectType(this)">
+          <div class="type-option-icon">🏡</div>
+          <div class="type-option-name">Villa / House</div>
+        </div>
+        <div class="type-option" onclick="selectType(this)">
+          <div class="type-option-icon">🌿</div>
+          <div class="type-option-name">Land / Plot</div>
+        </div>
+        <div class="type-option" onclick="selectType(this)">
+          <div class="type-option-icon">🏢</div>
+          <div class="type-option-name">Commercial</div>
+        </div>
+        <div class="type-option" onclick="selectType(this)">
+          <div class="type-option-icon">🏝</div>
+          <div class="type-option-name">Island Property</div>
+        </div>
+        <div class="type-option" onclick="selectType(this)">
+          <div class="type-option-icon">🔄</div>
+          <div class="type-option-name">Conversion</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Property Address</label>
+          <input class="form-input" placeholder="Street, City"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">KAEK Code (if known)</label>
+          <input class="form-input" placeholder="050230501001"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Property Area (m²)</label>
+          <input class="form-input" placeholder="85"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Agreed Price (€)</label>
+          <input class="form-input" placeholder="420000"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Buyer Name</label>
+          <input class="form-input" placeholder="Full name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Buyer Type</label>
+          <select class="form-select">
+            <option>Greek Citizen</option>
+            <option>EU Citizen</option>
+            <option>Non-EU (Golden Visa)</option>
+            <option>Legal Entity</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Seller Name / AFM</label>
+          <input class="form-input" placeholder="Name or AFM"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Closing Date</label>
+          <input class="form-input" type="date"/>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <input class="form-input" placeholder="Any additional context…"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closeNewCase()">Cancel</button>
+      <button class="btn primary" onclick="createCase()">Create Case & Generate Checklist →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// KTIMACHECK — LIVE BACKEND CONNECTION
+// ══════════════════════════════════════════════════════
+const API_BASE = "https://ktimacheck-api.onrender.com";
+
+// ── State ─────────────────────────────────────────────
+let allCases = [];
+let currentCaseId = null;
+let currentCase = null;
+
+// ── API Helper ────────────────────────────────────────
+async function api(method, path, body = null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(API_BASE + path, opts);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    return await res.json();
+  } catch (e) {
+    showToast('error', e.message || 'Network error');
+    throw e;
+  }
+}
+
+// ── Navigation ────────────────────────────────────────
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.textContent.trim().toLowerCase().includes(id.substring(0,4))) n.classList.add('active');
+    });
+  }
+  // Load data when switching pages
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'cases') loadCasesList();
+}
+
+// ── Dashboard ─────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    // Load stats
+    const stats = await api('GET', '/dashboard/stats');
+    document.querySelectorAll('.stat-value')[0].textContent = stats.active_cases || 0;
+    document.querySelectorAll('.stat-value')[1].textContent = stats.flagged_cases || 0;
+    document.querySelectorAll('.stat-value')[2].textContent = stats.total_documents || 0;
+    document.querySelectorAll('.stat-value')[3].textContent = stats.total_reports || 0;
+
+    // Load recent cases
+    const cases = await api('GET', '/cases');
+    allCases = cases;
+    renderCasesTable(cases, 'dashboard');
+  } catch(e) {
+    // Keep demo data if backend not responding
+  }
+}
+
+// ── Cases List ────────────────────────────────────────
+async function loadCasesList() {
+  try {
+    const cases = await api('GET', '/cases');
+    allCases = cases;
+    renderCasesTable(cases, 'cases');
+  } catch(e) {}
+}
+
+function renderCasesTable(cases, target) {
+  if (target === 'dashboard') {
+    const body = document.getElementById('dashboardTableBody');
+    if (!body) return;
+    if (cases.length === 0) {
+      body.innerHTML = '<div style="padding:40px;text-align:center;color:var(--ink3);font-family:var(--font-mono);font-size:11px">No cases yet — click New Case to create your first one</div>';
+      return;
+    }
+    body.innerHTML = '';
+    cases.slice(0, 5).forEach((c, i) => {
+      const pct = c.progress || 0;
+      const fillClass = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+      const statusClass = { active:'active', flagged:'flagged', complete:'complete', pending:'pending', archived:'draft' }[c.status] || 'draft';
+      const row = document.createElement('div');
+      row.className = 'table-row';
+      row.style.animationDelay = (i * 0.05) + 's';
+      row.onclick = () => openCase(c.id);
+      row.innerHTML = '<div><div class="case-name">' + c.case_ref + '</div><div class="case-addr">' + c.city + ' · KAEK ' + (c.kaek || '—') + '</div></div><div class="case-client">' + c.buyer_name + '</div><div><span class="badge draft">' + c.property_type + '</span></div><div><span class="badge ' + statusClass + '">' + c.status + '</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill ' + fillClass + '" style="width:' + pct + '%"></div></div><div class="progress-pct">' + pct + '%</div></div><div><button class="action-btn">Open →</button></div>';
+      body.appendChild(row);
+    });
+    return;
+  }
+  const wrap = document.querySelector('.page#page-cases .table-wrap');
+  if (!wrap) return;
+  const rows = wrap.querySelectorAll('.table-row');
+  rows.forEach(r => r.remove());
+
+  cases.slice(0, target === 'dashboard' ? 5 : 50).forEach((c, i) => {
+    const pct = c.progress || 0;
+    const fillClass = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+    const statusClass = { active:'active', flagged:'flagged', complete:'complete', pending:'pending', archived:'draft' }[c.status] || 'draft';
+    const row = document.createElement('div');
+    row.className = 'table-row';
+    row.style.animationDelay = (i * 0.05) + 's';
+    row.onclick = () => openCase(c.id);
+    row.innerHTML = `
+      <div>
+        <div class="case-name">${c.case_ref}</div>
+        <div class="case-addr">${c.city}, ${c.region || 'Αττική'} · KAEK ${c.kaek || '—'}</div>
+      </div>
+      <div class="case-client">${c.buyer_name}</div>
+      <div><span class="badge draft">${c.property_type}</span></div>
+      <div><span class="badge ${statusClass}">${c.status}</span></div>
+      <div class="progress-cell">
+        <div class="progress-bar-bg"><div class="progress-bar-fill ${fillClass}" style="width:${pct}%"></div></div>
+        <div class="progress-pct">${pct}%</div>
+      </div>
+      <div><button class="action-btn" onclick="event.stopPropagation();openCase('${c.id}')">Open →</button></div>`;
+    wrap.appendChild(row);
+  });
+}
+
+// ── Case Detail ───────────────────────────────────────
+async function openCase(caseId) {
+  currentCaseId = caseId;
+  showToast('info', 'Loading case…');
+  try {
+    const data = await api('GET', `/cases/${caseId}`);
+    currentCase = data;
+    renderCaseDetail(data);
+    showPage('case-detail');
+  } catch(e) {
+    showToast('error', 'Could not load case');
+  }
+}
+
+function renderCaseDetail(data) {
+  document.getElementById('caseDetailTitle').textContent = data.case_ref;
+  document.getElementById('caseDetailAddr').textContent =
+    `${data.address}, ${data.city} · ${data.buyer_name} · ${data.property_type} · €${(data.agreed_price||0).toLocaleString()}`;
+
+  // Property panel
+  const propBody = document.querySelector('#page-case-detail .panel-card:first-child .panel-body');
+  if (propBody) {
+    propBody.innerHTML = `
+      <div class="prop-field"><div class="prop-label">Property Value</div><div class="prop-value highlight">€ ${(data.agreed_price||0).toLocaleString()}</div></div>
+      <div class="prop-field"><div class="prop-label">Address</div><div class="prop-value">${data.address}</div></div>
+      <div class="prop-field"><div class="prop-label">KAEK Code</div><div class="prop-value mono">${data.kaek || '—'}</div></div>
+      <div class="prop-field"><div class="prop-label">Type / Area</div><div class="prop-value">${data.property_type} · ${data.area_sqm || '—'} m²</div></div>
+      <div class="prop-field"><div class="prop-label">Buyer</div><div class="prop-value">${data.buyer_name}</div></div>
+      <div class="prop-field"><div class="prop-label">Target Close</div><div class="prop-value mono">${data.target_closing_date || '—'}</div></div>`;
+  }
+
+  // Red flags panel
+  const flags = (data.red_flags || []).filter(f => !f.resolved);
+  const flagsPanel = document.querySelectorAll('#page-case-detail .panel-card')[1];
+  if (flagsPanel) {
+    const flagBody = flagsPanel.querySelector('.panel-body');
+    const flagHeader = flagsPanel.querySelector('.panel-title');
+    if (flagHeader) flagHeader.innerHTML = flags.length > 0 ? `🚩 Red Flags (${flags.length})` : '✅ No Red Flags';
+    if (flagBody) {
+      if (flags.length === 0) {
+        flagBody.innerHTML = `<div style="font-size:12px;color:var(--green);text-align:center;padding:12px">All clear — no issues detected</div>`;
+      } else {
+        flagBody.innerHTML = `<div class="flag-list">${flags.map(f => `
+          <div class="flag-item ${f.severity}">
+            <div class="flag-severity">${f.severity === 'critical' ? '⬛ Critical' : f.severity === 'warning' ? '◈ Warning' : 'ℹ Info'}</div>
+            <div class="flag-desc">${f.description}</div>
+          </div>`).join('')}</div>`;
+      }
+    }
+  }
+
+  // Activity timeline
+  const acts = (data.activities || []).slice(0, 6);
+  const tlPanel = document.querySelectorAll('#page-case-detail .panel-card')[2];
+  if (tlPanel) {
+    const tlBody = tlPanel.querySelector('.panel-body');
+    if (tlBody && acts.length > 0) {
+      tlBody.innerHTML = `<div class="timeline">${acts.map(a => `
+        <div class="tl-item">
+          <div class="tl-dot done"></div>
+          <div class="tl-content">
+            <div class="tl-event">${a.event}</div>
+            <div class="tl-time">${new Date(a.created_at).toLocaleString('el-GR')}</div>
+          </div>
+        </div>`).join('')}</div>`;
+    }
+  }
+
+  // Checklist progress
+  const checklist = data.checklist || [];
+  const done = checklist.filter(i => ['verified','uploaded'].includes(i.status)).length;
+  const total = checklist.length;
+  const clHeader = document.querySelector('#page-case-detail .checklist-header');
+  if (clHeader) {
+    const pctEl = clHeader.querySelector('div[style]');
+    if (pctEl) pctEl.textContent = `${done} / ${total} complete`;
+  }
+}
+
+function showCase(caseRef) {
+  const c = allCases.find(x => x.case_ref === caseRef);
+  if (c) openCase(c.id);
+  else showPage('case-detail');
+}
+
+// ── Checklist Toggle ──────────────────────────────────
+function togglePillar(header) {
+  const items = header.nextElementSibling;
+  const arrow = header.querySelector('.pillar-toggle');
+  const isOpen = items.style.display !== 'none';
+  items.style.display = isOpen ? 'none' : 'block';
+  arrow.classList.toggle('open', !isOpen);
+}
+
+// ── New Case Modal ────────────────────────────────────
+function openNewCase() {
+  document.getElementById('newCaseModal').classList.add('open');
+}
+function closeNewCase() {
+  document.getElementById('newCaseModal').classList.remove('open');
+}
+document.getElementById('newCaseModal').addEventListener('click', function(e) {
+  if (e.target === this) closeNewCase();
+});
+
+function selectType(el) {
+  document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function createCase() {
+  // Gather form values
+  const inputs = document.querySelectorAll('#newCaseModal .form-input');
+  const selects = document.querySelectorAll('#newCaseModal .form-select');
+  const selectedType = document.querySelector('.type-option.selected .type-option-name');
+
+  const address = inputs[0]?.value?.trim();
+  const kaek = inputs[1]?.value?.trim();
+  const area = inputs[2]?.value?.trim();
+  const price = inputs[3]?.value?.trim();
+  const buyerName = inputs[4]?.value?.trim();
+  const sellerName = inputs[5]?.value?.trim();
+  const closingDate = inputs[6]?.value?.trim();
+  const buyerType = selects[0]?.value || 'greek';
+  const propertyType = selectedType?.textContent?.toLowerCase().replace(' / ', '_').replace(' ', '_') || 'apartment';
+
+  if (!address || !buyerName) {
+    showToast('error', 'Address and buyer name are required');
+    return;
+  }
+
+  const btn = document.querySelector('#newCaseModal .btn.primary');
+  btn.textContent = 'Creating…';
+  btn.disabled = true;
+
+  try {
+    const payload = {
+      property_type: propertyType,
+      buyer_type: buyerType.toLowerCase().replace(/ /g,'_').replace('-','_'),
+      address: address,
+      city: address.split(',').slice(-1)[0]?.trim() || 'Athens',
+      kaek: kaek || null,
+      area_sqm: area ? parseFloat(area) : null,
+      agreed_price: price ? parseFloat(price) : null,
+      buyer_name: buyerName,
+      seller_name: sellerName || null,
+      target_closing_date: closingDate || null,
+      is_golden_visa: buyerType.includes('Golden') || buyerType.includes('non_eu'),
+      is_island_or_border: propertyType.includes('island'),
+      is_company_seller: false,
+      is_inherited: false,
+    };
+
+    const newCase = await api('POST', '/cases', payload);
+    closeNewCase();
+    showToast('success', `${newCase.case_ref} created · ${newCase.checklist?.length || 0} checklist items generated`);
+    setTimeout(() => showToast('info', 'Checklist auto-adjusted for property type'), 1000);
+
+    // Reload dashboard
+    allCases.unshift(newCase);
+    await loadDashboard();
+
+    // Clear form
+    inputs.forEach(i => i.value = '');
+
+  } catch(e) {
+    showToast('error', 'Failed to create case: ' + e.message);
+  } finally {
+    btn.textContent = 'Create Case & Generate Checklist →';
+    btn.disabled = false;
+  }
+}
+
+// ── Document Upload (AI Analysis) ────────────────────
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+async function processFile(file) {
+  if (!currentCaseId) {
+    showToast('error', 'Please open a case first before uploading documents');
+    return;
+  }
+
+  showToast('info', `Uploading ${file.name} for AI analysis…`);
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch(`${API_BASE}/cases/${currentCaseId}/documents/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+    const data = await res.json();
+
+    showToast('success', `${file.name} analyzed — ${Object.keys(data.analysis?.extracted_fields || {}).length} fields extracted`);
+
+    if (data.new_flags?.length > 0) {
+      setTimeout(() => showToast('error', `⚠ ${data.new_flags.length} issue(s) detected`), 800);
+    }
+
+    renderAnalysisResult(data);
+
+  } catch(e) {
+    showToast('error', 'Upload failed: ' + e.message);
+  }
+}
+
+function renderAnalysisResult(data) {
+  const container = document.getElementById('analysisResults');
+  const analysis = data.analysis || {};
+  const fields = analysis.extracted_fields || {};
+  const flags = analysis.red_flags || [];
+
+  const fieldsHtml = Object.entries(fields).slice(0, 6).map(([k, v]) => `
+    <div class="field-item">
+      <div class="field-key">${k.replace(/_/g,' ')}</div>
+      <div class="field-val ${v && v.toString().includes('⚠') ? 'flag' : ''}">${v || '—'}</div>
+    </div>`).join('');
+
+  const div = document.createElement('div');
+  div.className = 'analysis-result';
+  div.innerHTML = `
+    <div class="analysis-header">
+      <div>
+        <div class="analysis-doc-name">📄 ${data.document?.filename || 'Document'}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:2px">${analysis.doc_type_display || analysis.doc_type || 'Document'} · Just analyzed</div>
+      </div>
+      <span class="badge ${flags.length > 0 ? 'flagged' : 'active'}">${flags.length > 0 ? 'Issues Found' : 'Clean'}</span>
+    </div>
+    <div class="extracted-fields">${fieldsHtml || '<div style="color:var(--ink3);font-size:11px;padding:4px">No fields extracted — manual review needed</div>'}</div>
+    <div class="ai-findings">
+      <div class="ai-label">AI Findings</div>
+      <div class="ai-text">${analysis.summary || 'Analysis complete.'}</div>
+    </div>`;
+  container.insertBefore(div, container.firstChild);
+}
+
+// ── Report Download ───────────────────────────────────
+async function downloadReport() {
+  if (!currentCaseId) {
+    showToast('error', 'Please open a case first');
+    return;
+  }
+  showToast('info', 'Generating bilingual PDF report…');
+  try {
+    const res = await fetch(`${API_BASE}/cases/${currentCaseId}/report`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: 'both' }),
+    });
+    if (!res.ok) throw new Error('Report generation failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `KtimaCheck_${currentCase?.case_ref || 'Report'}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('success', 'Report downloaded successfully');
+  } catch(e) {
+    showToast('error', 'Report failed: ' + e.message);
+  }
+}
+
+// ── Filter Cases ──────────────────────────────────────
+function filterCases(type, el) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  if (type === 'all') renderCasesTable(allCases, 'dashboard');
+  else renderCasesTable(allCases.filter(c => c.status === type), 'dashboard');
+}
+
+// ── Toast System ──────────────────────────────────────
+function showToast(type, message) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type]||'ℹ'}</span>${message}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('out');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+// ── Keyboard Shortcuts ────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeNewCase();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openNewCase(); }
+});
+
+// ── Init ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Animate progress bars
+  document.querySelectorAll('.progress-bar-fill').forEach((bar, i) => {
+    const w = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = w; }, 300 + i * 80);
+  });
+
+  // Wire up report download button
+  document.querySelectorAll('.btn.gold').forEach(btn => {
+    if (btn.textContent.includes('Report') || btn.textContent.includes('Download')) {
+      btn.onclick = downloadReport;
+    }
+  });
+
+  // Load live data
+  loadDashboard();
+});
+</script>
 </body>
 </html>
