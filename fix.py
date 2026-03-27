@@ -1,0 +1,8 @@
+f=open('ktimacheck.html','r',encoding='utf-8') 
+c=f.read() 
+f.close() 
+c=c.replace('KTIMA-2401','').replace('KTIMA-2402','').replace('KTIMA-2403','').replace('KTIMA-2404','').replace('KTIMA-2405','') 
+f=open('ktimacheck.html','w',encoding='utf-8') 
+f.write(c) 
+f.close() 
+print('Done') 
