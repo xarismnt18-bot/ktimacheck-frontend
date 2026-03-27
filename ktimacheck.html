@@ -1908,14 +1908,10 @@ body::before {
             <div class="table-header-cell">Progress</div>
             <div class="table-header-cell">Action</div>
           </div>
-          <div class="table-row" onclick="showCase('KTIMA-2401')"><div><div class="case-name">KTIMA-2401</div><div class="case-addr">Κηφισιά, Αττική</div></div><div class="case-client">Αλέξανδρος Παπαδάκης</div><div><span class="badge draft">Apartment</span></div><div><span class="badge flagged">Flagged</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:62%"></div></div><div class="progress-pct">62%</div></div><div><button class="action-btn">Open →</button></div></div>
-          <div class="table-row" onclick="showCase('KTIMA-2402')"><div><div class="case-name">KTIMA-2402</div><div class="case-addr">Γλυφάδα, Αττική</div></div><div class="case-client">Maria Schneider</div><div><span class="badge draft">Villa</span></div><div><span class="badge active">Active</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:85%"></div></div><div class="progress-pct">85%</div></div><div><button class="action-btn">Open →</button></div></div>
-          <div class="table-row" onclick="showCase('KTIMA-2403')"><div><div class="case-name">KTIMA-2403</div><div class="case-addr">Θεσσαλονίκη</div></div><div class="case-client">Jin Wei</div><div><span class="badge draft">Commercial</span></div><div><span class="badge flagged">Flagged</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill low" style="width:38%"></div></div><div class="progress-pct">38%</div></div><div><button class="action-btn">Open →</button></div></div>
-          <div class="table-row"><div><div class="case-name">KTIMA-2404</div><div class="case-addr">Μύκονος, Ν. Αιγαίο</div></div><div class="case-client">Ahmed Al-Rashid</div><div><span class="badge draft">Land</span></div><div><span class="badge pending">Pending</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill mid" style="width:55%"></div></div><div class="progress-pct">55%</div></div><div><button class="action-btn">Open →</button></div></div>
-          <div class="table-row" onclick="showPage('report')"><div><div class="case-name">KTIMA-2405</div><div class="case-addr">Κολωνάκι, Αθήνα</div></div><div class="case-client">Σοφία Μαρκοπούλου</div><div><span class="badge draft">Apartment</span></div><div><span class="badge complete">Complete</span></div><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill high" style="width:100%"></div></div><div class="progress-pct">100%</div></div><div><button class="action-btn">Report →</button></div></div>
-        </div>
-      </div>
-    </div>
+
+            <div id="casesTableBody"></div>
+
+          </div>
 
     <!-- ════════════════ CHECKLIST PAGE ════════════════ -->
     <div class="page" id="page-checklist">
@@ -2517,62 +2513,69 @@ function selectType(el) {
 }
 
 async function createCase() {
-  // Gather form values
+  const btn = document.querySelector('#newCaseModal .btn-primary');
   const inputs = document.querySelectorAll('#newCaseModal .form-input');
-  const selects = document.querySelectorAll('#newCaseModal .form-select');
-  const selectedType = document.querySelector('.type-option.selected .type-option-name');
-
-  const address = inputs[0]?.value?.trim();
-  const kaek = inputs[1]?.value?.trim();
-  const area = inputs[2]?.value?.trim();
-  const price = inputs[3]?.value?.trim();
-  const buyerName = inputs[4]?.value?.trim();
-  const sellerName = inputs[5]?.value?.trim();
-  const closingDate = inputs[6]?.value?.trim();
-  const buyerType = selects[0]?.value || 'greek';
-  const propertyType = selectedType?.textContent?.toLowerCase().replace(' / ', '_').replace(' ', '_') || 'apartment';
-
-  if (!address || !buyerName) {
-    showToast('error', 'Address and buyer name are required');
-    return;
-  }
-
-  const btn = document.querySelector('#newCaseModal .btn.primary');
-  btn.textContent = 'Creating…';
-  btn.disabled = true;
 
   try {
-    const payload = {
-      property_type: propertyType,
-      buyer_type: buyerType.toLowerCase().replace(/ /g,'_').replace('-','_'),
-      address: address,
-      city: address.split(',').slice(-1)[0]?.trim() || 'Athens',
-      kaek: kaek || null,
-      area_sqm: area ? parseFloat(area) : null,
-      agreed_price: price ? parseFloat(price) : null,
-      buyer_name: buyerName,
-      seller_name: sellerName || null,
-      target_closing_date: closingDate || null,
-      is_golden_visa: buyerType.includes('Golden') || buyerType.includes('non_eu'),
-      is_island_or_border: propertyType.includes('island'),
-      is_company_seller: false,
-      is_inherited: false,
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+
+    const selectedTypeEl = document.querySelector('.type-option.selected .type-option-name');
+    const buyerTypeEl = document.querySelector('#newCaseModal select');
+
+    const propertyTypeMap = {
+      "Apartment": "apartment",
+      "Villa / House": "villa",
+      "Land / Plot": "land",
+      "Commercial": "commercial",
+      "Island Property": "island",
+      "Conversion": "conversion"
     };
 
+    const buyerTypeMap = {
+      "Greek Citizen": "greek",
+      "EU Citizen": "eu",
+      "Non-EU (Golden Visa)": "non_eu_golden_visa",
+      "Legal Entity": "legal_entity"
+    };
+
+    const propertyTypeLabel = selectedTypeEl?.textContent?.trim() || "Apartment";
+    const buyerTypeLabel = buyerTypeEl?.value?.trim() || "Greek Citizen";
+
+    const payload = {
+      property_type: propertyTypeMap[propertyTypeLabel] || "apartment",
+      buyer_type: buyerTypeMap[buyerTypeLabel] || "greek",
+      address: inputs[0]?.value?.trim() || "",
+      city: inputs[1]?.value?.trim() || "",
+      region: inputs[2]?.value?.trim() || null,
+      kaek: inputs[3]?.value?.trim() || null,
+      area_sqm: inputs[4]?.value ? Number(inputs[4].value) : null,
+      agreed_price: inputs[5]?.value ? Number(inputs[5].value) : null,
+      buyer_name: inputs[6]?.value?.trim() || "",
+      seller_name: inputs[7]?.value?.trim() || null,
+      target_closing_date: inputs[8]?.value || null,
+      notes: inputs[9]?.value?.trim() || null,
+      is_island_or_border: propertyTypeMap[propertyTypeLabel] === "island",
+      is_golden_visa: buyerTypeMap[buyerTypeLabel] === "non_eu_golden_visa",
+      is_company_seller: false,
+      is_inherited: false
+    };
+
+    if (!payload.address || !payload.city || !payload.buyer_name) {
+      showToast('error', 'Fill address, city, and buyer name');
+      return;
+    }
+
     const newCase = await api('POST', '/cases', payload);
+
     closeNewCase();
-    showToast('success', `${newCase.case_ref} created · ${newCase.checklist?.length || 0} checklist items generated`);
-    setTimeout(() => showToast('info', 'Checklist auto-adjusted for property type'), 1000);
+    showToast('success', 'Case created successfully');
 
-    // Reload dashboard
-    allCases.unshift(newCase);
-    await loadDashboard();
+    await loadCases();
 
-    // Clear form
-    inputs.forEach(i => i.value = '');
-
-  } catch(e) {
-    showToast('error', 'Failed to create case: ' + e.message);
+  } catch (e) {
+    console.error(e);
+    showToast('error', e.message || 'Failed to create case');
   } finally {
     btn.textContent = 'Create Case & Generate Checklist →';
     btn.disabled = false;
